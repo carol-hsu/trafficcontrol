@@ -45,6 +45,10 @@ RUN yum install -y \
     yum clean all || \
     echo "ERROR INSTALLING PACKAGES"
 
+COPY dns/insert-self-into-dns.sh /usr/local/sbin
+COPY dns/set-dns.sh /usr/local/sbin
+RUN chmod 700 /usr/local/sbin/*.sh
+
 ADD enroller/server_template.json \
     traffic_portal/run.sh \
     traffic_ops/to-access.sh /

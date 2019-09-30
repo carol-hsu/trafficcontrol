@@ -28,7 +28,6 @@ WORKDIR /go/src/github.com/apache/trafficcontrol/infrastructure/cdn-in-a-box/enr
 RUN go clean && go get -v && go build
 
 
-
 FROM debian:stretch
 
 RUN apt-get update && apt-get install -y netcat curl dnsutils net-tools && apt-get clean
@@ -38,6 +37,10 @@ COPY --from=enroller-builder \
    /go/src/github.com/apache/trafficcontrol/infrastructure/cdn-in-a-box/enroller/server_template.json \
    /go/src/github.com/apache/trafficcontrol/infrastructure/cdn-in-a-box/traffic_ops/to-access.sh \
    /
+
+COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
+COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
+RUN chmod 700 /usr/local/sbin/*.sh
 
 WORKDIR /shared/enroller
 CMD /run.sh
