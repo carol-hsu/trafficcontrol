@@ -106,7 +106,7 @@ ADD infrastructure/cdn-in-a-box/traffic_ops_data /traffic_ops_data
 
 COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
 COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
+COPY infrastructure/cdn-in-a-box/traffic_ops/set-to-ips-from-dns.sh /usr/local/sbin/set-to-ips-from-dns.sh
 
 RUN chown -R trafops:trafops /opt/traffic_ops
 CMD /run.sh

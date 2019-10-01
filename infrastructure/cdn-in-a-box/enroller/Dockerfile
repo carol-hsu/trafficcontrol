@@ -40,7 +40,6 @@ COPY --from=enroller-builder \
 
 COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
 COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
 
 WORKDIR /shared/enroller
 CMD /run.sh

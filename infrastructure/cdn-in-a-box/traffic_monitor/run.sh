@@ -38,8 +38,8 @@ do
 	if [[ -z $$v ]]; then echo "$v is unset"; exit 1; fi
 done
 
-set-dns.sh
-insert-self-into-dns.sh
+sh set-dns.sh
+sh insert-self-into-dns.sh
 
 source /to-access.sh
 

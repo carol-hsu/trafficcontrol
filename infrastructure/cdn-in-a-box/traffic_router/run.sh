@@ -17,8 +17,8 @@
 # under the License.
 NAME="Traffic Router Application"
 
-set-dns.sh
-insert-self-into-dns.sh
+sh set-dns.sh
+sh insert-self-into-dns.sh
 
 # Global Vars for FQDNs, ports, etc
 source /to-access.sh

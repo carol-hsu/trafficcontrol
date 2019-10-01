@@ -57,8 +57,7 @@ RUN touch /var/log/ort.log && pip3 install ./Apache-TrafficControl && pip3 insta
 
 ADD infrastructure/cdn-in-a-box/cache/run.sh infrastructure/cdn-in-a-box/traffic_ops/to-access.sh infrastructure/cdn-in-a-box/enroller/server_template.json /
 
-COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
-COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
+#COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
+#COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
 
 CMD /run.sh

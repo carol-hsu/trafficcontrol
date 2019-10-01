@@ -40,7 +40,6 @@ COPY enroller/server_template.json /
 
 COPY dns/set-self-dns.sh /usr/local/sbin
 COPY dns/set-dns-update.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
 
 RUN chmod 755 /sbin/entrypoint.sh
 
