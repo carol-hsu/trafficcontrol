@@ -38,6 +38,7 @@ import (
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/asn"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/ats"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/ats/atsprofile"
+	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/ats/atsserver"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/auth"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/cachegroup"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/cachegroupparameter"
@@ -67,6 +68,7 @@ import (
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/region"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/role"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/server"
+	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/servercheck"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/staticdnsentry"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/status"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/steering"
@@ -180,6 +182,7 @@ func Routes(d ServerData) ([]Route, []RawRoute, http.Handler, error) {
 		{1.1, http.MethodGet, `user/{id}/deliveryservices/available/?(\.json)?$`, user.GetAvailableDSes, auth.PrivLevelReadOnly, Authenticated, nil},
 		{1.1, http.MethodPost, `user/login/?$`, login.LoginHandler(d.DB, d.Config), 0, NoAuth, nil},
 		{1.4, http.MethodPost, `user/login/oauth/?$`, login.OauthLoginHandler(d.DB, d.Config), 0, NoAuth, nil},
+		{1.1, http.MethodPost, `user/login/token(/|\.json)?$`, login.TokenLoginHandler(d.DB, d.Config), 0, NoAuth, nil},
 
 		//User: CRUD
 		{1.1, http.MethodGet, `users/?(\.json)?$`, api.ReadHandler(&user.TOUser{}), auth.PrivLevelReadOnly, Authenticated, nil},
@@ -243,9 +246,12 @@ func Routes(d ServerData) ([]Route, []RawRoute, http.Handler, error) {
 		{1.1, http.MethodGet, `deliveryservice_matches/?(\.json)?$`, deliveryservice.GetMatches, auth.PrivLevelReadOnly, Authenticated, nil},
 
 		//Server
-		{1.1, http.MethodGet, `servers/checks$`, handlerToFunc(proxyHandler), 0, NoAuth, []Middleware{}},
 		{1.1, http.MethodGet, `servers/status$`, handlerToFunc(proxyHandler), 0, NoAuth, []Middleware{}},
 		{1.1, http.MethodGet, `servers/totals$`, handlerToFunc(proxyHandler), 0, NoAuth, []Middleware{}},
+
+		//Serverchecks
+		{1.1, http.MethodGet, `servers/checks$`, handlerToFunc(proxyHandler), 0, NoAuth, []Middleware{}},
+		{1.1, http.MethodPost, `servercheck/?(\.json)?$`, servercheck.CreateUpdateServercheck, auth.PrivLevelInvalid, Authenticated, nil},
 
 		//Server Details
 		{1.1, http.MethodGet, `servers/details/?(\.json)?$`, server.GetDetailParamHandler, auth.PrivLevelReadOnly, Authenticated, nil},
@@ -389,7 +395,6 @@ func Routes(d ServerData) ([]Route, []RawRoute, http.Handler, error) {
 		{1.1, http.MethodPut, `snapshot/{cdn}/?$`, crconfig.SnapshotHandler, auth.PrivLevelOperations, Authenticated, nil},
 
 		// ATS config files
-		{1.1, http.MethodGet, `servers/{server-name-or-id}/configfiles/ats/?(\.json)?$`, ats.GetConfigMetaData, auth.PrivLevelOperations, Authenticated, nil},
 		{1.1, http.MethodGet, `cdns/{cdn-name-or-id}/configfiles/ats/regex_revalidate.config/?(\.json)?$`, ats.GetRegexRevalidateDotConfig, auth.PrivLevelOperations, Authenticated, nil},
 		{1.1, http.MethodGet, `cdns/{cdn-name-or-id}/configfiles/ats/hdr_rw_mid_{xml-id}.config/?(\.json)?$`, ats.GetMidHeaderRewriteDotConfig, auth.PrivLevelOperations, Authenticated, nil},
 		{1.1, http.MethodGet, `cdns/{cdn-name-or-id}/configfiles/ats/hdr_rw_{xml-id}.config/?(\.json)?$`, ats.GetEdgeHeaderRewriteDotConfig, auth.PrivLevelOperations, Authenticated, nil},
@@ -411,8 +416,9 @@ func Routes(d ServerData) ([]Route, []RawRoute, http.Handler, error) {
 		{1.1, http.MethodGet, `profiles/{profile-name-or-id}/configfiles/ats/volume.config/?$`, atsprofile.GetVolume, auth.PrivLevelOperations, Authenticated, nil},
 		{1.1, http.MethodGet, `profiles/{profile-name-or-id}/configfiles/ats/{file}/?$`, atsprofile.GetUnknown, auth.PrivLevelOperations, Authenticated, nil},
 
-		// Cache Configs
-		{1.1, http.MethodGet, `servers/{id-or-host}/configfiles/ats/parent.config/?(\.json)?$`, ats.GetParentDotConfig, auth.PrivLevelOperations, Authenticated, nil},
+		{1.1, http.MethodGet, `servers/{server-name-or-id}/configfiles/ats/?(\.json)?$`, atsserver.GetConfigMetaData, auth.PrivLevelOperations, Authenticated, nil},
+		{1.1, http.MethodGet, `servers/{server-name-or-id}/configfiles/ats/parent.config/?(\.json)?$`, atsserver.GetParentDotConfig, auth.PrivLevelOperations, Authenticated, nil},
+		{1.1, http.MethodGet, `servers/{server-name-or-id}/configfiles/ats/remap.config/?(\.json)?$`, atsserver.GetServerConfigRemap, auth.PrivLevelOperations, Authenticated, nil},
 
 		// Federations
 		{1.4, http.MethodGet, `federations/all/?(\.json)?$`, federations.GetAll, auth.PrivLevelAdmin, Authenticated, nil},

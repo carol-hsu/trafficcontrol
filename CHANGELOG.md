@@ -22,6 +22,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
   - /api/1.4/user/login/oauth `POST`
   - /api/1.1/profiles/:name/configfiles/ats/* `GET`
   - /api/1.1/dbdump `GET`
+  - /api/1.1/servers/:name/configfiles/ats/parent.config
+  - /api/1.1/servers/:name/configfiles/ats/remap.config
+  - /api/1.1/user/login/token `POST`
+
 - To support reusing a single riak cluster connection, an optional parameter is added to riak.conf: "HealthCheckInterval". This options takes a 'Duration' value (ie: 10s, 5m) which affects how often the riak cluster is health checked.  Default is currently set to: "HealthCheckInterval": "5s".
 - Added a new Go db/admin binary to replace the Perl db/admin.pl script which is now deprecated and will be removed in a future release. The new db/admin binary is essentially a drop-in replacement for db/admin.pl since it supports all of the same commands and options; therefore, it should be used in place of db/admin.pl for all the same tasks.
 - Added an API 1.4 endpoint, /api/1.4/cdns/dnsseckeys/refresh, to perform necessary behavior previously served outside the API under `/internal`.
@@ -43,6 +47,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Traffic Ops now uses a consistent format for audit logs across all Go endpoints
 - Added cache-side config generator, atstccfg, installed with ORT. Currently includes parent.config and all profile configs, proxies others to Traffic Ops.
 - In Traffic Portal, all tables now include a 'CSV' link to enable the export of table data in CSV format.
+- Pylint configuration now enforced (present in [a file in the Python client directory](./traffic_control/clients/python/pylint.rc))
 
 ### Changed
 - Traffic Router:  TR will now allow steering DSs and steering target DSs to have RGB enabled. (fixes #3910)
