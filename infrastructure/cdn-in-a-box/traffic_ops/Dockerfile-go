@@ -38,9 +38,9 @@ ADD enroller/server_template.json \
     traffic_ops/config.sh \
     traffic_ops/run-go.sh \
     traffic_ops/to-access.sh \
-    dns/insert-self-into-dns.sh \
-    dns/set-dns.sh \
     /
+
+ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
 
 #COPY dns/insert-self-into-dns.sh /usr/local/sbin
 #COPY dns/set-dns.sh /usr/local/sbin

@@ -29,10 +29,9 @@ RUN echo 'APT::Install-Recommends 0;' >> /etc/apt/apt.conf.d/01norecommends \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y bind9=${BIND_VERSION}* bind9-host=${BIND_VERSION}* dnsutils \
  && rm -rf /var/lib/apt/lists/*
 
-ADD dns/entrypoint.sh \
-    dns/set-self-dns.sh \
-    dns/set-dns-update.sh \
-    /sbin/
+ADD dns/entrypoint.sh /sbin/
+
+ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
 
 COPY dns/named.conf.local /etc/bind
 COPY dns/named.conf.options /etc/bind

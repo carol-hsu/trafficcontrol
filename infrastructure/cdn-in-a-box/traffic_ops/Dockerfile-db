@@ -26,9 +26,7 @@ RUN apk add bind-tools
 COPY traffic_ops/initdb.d /docker-entrypoint-initdb.d
 COPY traffic_ops/run-db.sh /
 
-ADD dns/insert-self-into-dns.sh \
-    dns/set-dns.sh \
-    /
+ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
 
 RUN chmod -R a+rx /run-db.sh /docker-entrypoint-initdb.d
 

@@ -64,4 +64,6 @@ ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
     infrastructure/cdn-in-a-box/dns/set-dns.sh \
     /usr/local/sbin/
 
+ADD infrastructure/cdn-in-a-box/mid/run.sh /opt/init.d/99-run.sh
+
 CMD /run.sh
