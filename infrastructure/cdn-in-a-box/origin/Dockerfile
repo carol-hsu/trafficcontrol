@@ -30,10 +30,11 @@ RUN rm -rf /var/www/localhost/
 RUN mkdir -p /var/www/html/
 
 ADD origin/lighttpd.conf /etc/lighttpd/lighttpd.conf
-ADD origin/run.sh traffic_ops/to-access.sh /
-
-COPY dns/insert-self-into-dns.sh /usr/local/sbin
-COPY dns/set-dns.sh /usr/local/sbin
+ADD origin/run.sh \
+    traffic_ops/to-access.sh \
+    dns/insert-self-into-dns.sh \
+    dns/set-dns.sh \
+    /
 
 EXPOSE 80
 

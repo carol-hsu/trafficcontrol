@@ -54,9 +54,9 @@ create_pid_dir
 create_bind_data_dir
 create_bind_cache_dir
 
-sh set-self-dns.sh
+set-self-dns.sh
 
-sh set-dns-update.sh & # needs to execute after the DNS server starts
+set-dns-update.sh & # needs to execute after the DNS server starts
 
 # allow arguments to be passed to named
 if [[ ${1:0:1} = '-' ]]; then

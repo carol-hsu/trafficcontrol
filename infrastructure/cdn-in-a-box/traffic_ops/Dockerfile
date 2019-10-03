@@ -100,13 +100,17 @@ ADD infrastructure/cdn-in-a-box/enroller/server_template.json \
     infrastructure/cdn-in-a-box/traffic_ops/generate-certs.sh \
     infrastructure/cdn-in-a-box/traffic_ops/trafficops-init.sh \
     infrastructure/cdn-in-a-box/variables.env \
+### add dns scripts
+    infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
+    infrastructure/cdn-in-a-box/dns/set-dns.sh \
+    infrastructure/cdn-in-a-box/traffic_ops/set-to-ips-from-dns.sh \ 
     /
 
 ADD infrastructure/cdn-in-a-box/traffic_ops_data /traffic_ops_data
 
-COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
-COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
-COPY infrastructure/cdn-in-a-box/traffic_ops/set-to-ips-from-dns.sh /usr/local/sbin/set-to-ips-from-dns.sh
+#COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
+#COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
+#COPY infrastructure/cdn-in-a-box/traffic_ops/set-to-ips-from-dns.sh /usr/local/sbin/
 
 RUN chown -R trafops:trafops /opt/traffic_ops
 CMD /run.sh

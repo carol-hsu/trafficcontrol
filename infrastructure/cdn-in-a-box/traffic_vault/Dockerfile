@@ -32,9 +32,8 @@ ADD enroller/server_template.json \
     traffic_vault/run.sh \
     traffic_vault/sslkeys.xml \
     traffic_ops/to-access.sh \
+    dns/insert-self-into-dns.sh \
+    dns/set-dns.sh \
     /
-
-COPY dns/insert-self-into-dns.sh /usr/local/sbin
-COPY dns/set-dns.sh /usr/local/sbin
 
 CMD /run.sh

@@ -39,9 +39,8 @@ RUN yum install -y epel-release && \
 ADD enroller/server_template.json \
     traffic_ops/to-access.sh \
     traffic_stats/run.sh \
+    dns/insert-self-into-dns.sh \
+    dns/set-dns.sh \
     /
-
-COPY dns/insert-self-into-dns.sh /usr/local/sbin
-COPY dns/set-dns.sh /usr/local/sbin
 
 ENTRYPOINT /run.sh

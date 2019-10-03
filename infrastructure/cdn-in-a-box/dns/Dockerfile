@@ -29,7 +29,11 @@ RUN echo 'APT::Install-Recommends 0;' >> /etc/apt/apt.conf.d/01norecommends \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y bind9=${BIND_VERSION}* bind9-host=${BIND_VERSION}* dnsutils \
  && rm -rf /var/lib/apt/lists/*
 
-COPY dns/entrypoint.sh /sbin/entrypoint.sh
+ADD dns/entrypoint.sh \
+    dns/set-self-dns.sh \
+    dns/set-dns-update.sh \
+    /sbin/
+
 COPY dns/named.conf.local /etc/bind
 COPY dns/named.conf.options /etc/bind
 COPY dns/zone.ciab.test /etc/bind
@@ -37,9 +41,6 @@ COPY dns/zone.ip4.arpa /etc/bind
 COPY dns/zone.ip6.arpa /etc/bind
 COPY traffic_ops/to-access.sh /
 COPY enroller/server_template.json /
-
-COPY dns/set-self-dns.sh /usr/local/sbin
-COPY dns/set-dns-update.sh /usr/local/sbin
 
 RUN chmod 755 /sbin/entrypoint.sh
 
