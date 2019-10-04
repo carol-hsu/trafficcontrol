@@ -51,23 +51,23 @@ Make sure your host installed [docker daemon](https://www.docker.com).
 need to build RPMs and docker images 
 
 ```
-# at the directory of this repo 
+// at the directory of this repo 
 $ cd infrastructure/cdn-in-a-box
 
-# build RPMs, only need to build once, no need to build everytime if there is not code pushed 
+// build RPMs, only need to build once, no need to build everytime if there is not code pushed 
 $ make
 
-# build docker images and boot up the services ( no need --build after you built the images
+// build docker images and boot up the services ( no need --build after you built the images
 $ docker-compose -f docker-compose.k8s.yml -f docker-compose.expose-ports.yml up --build
 
 ```
 
 * Test the correctness
 ```
-# after the server is running
+// after the server is running
 $ docker-compose -f docker-compose.traffic-ops-test.yml up
 
-# run another test
+// run another test
 $ docker-compose -f docker-compose.traffic-portal-test.yml up
 
 ```
