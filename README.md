@@ -46,7 +46,7 @@ Apache Traffic Control is an Open Source implementation of a Content Delivery Ne
 
 Make sure your host installed [docker daemon](https://www.docker.com).
 
-* Deployment
+### Deployment
 
 need to build RPMs and docker images 
 
@@ -62,7 +62,7 @@ $ docker-compose -f docker-compose.k8s.yml -f docker-compose.expose-ports.yml up
 
 ```
 
-* Test the correctness
+### Test the correctness
 ```
 // after the server is running
 $ docker-compose -f docker-compose.traffic-ops-test.yml up
