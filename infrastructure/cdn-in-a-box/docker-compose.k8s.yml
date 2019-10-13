@@ -31,7 +31,7 @@
 # Note that this setup is intended for testing and not for production use.
 
 ---
-version: '2.1'
+version: '3.7'
 
 services:
   # db is the Traffic Ops database running in postgresql.  Only trafficops and trafficops-perl need to have access to it.
@@ -40,6 +40,7 @@ services:
     build:
       context: .
       dockerfile: traffic_ops/Dockerfile-db
+    image: cdn-ops-db
     hostname: db
     domainname: infra.ciab.test
     depends_on:
@@ -58,6 +59,7 @@ services:
     build:
       context: .
       dockerfile: traffic_ops/Dockerfile-go
+    image: cdn-ops-go
     depends_on:
       - db
       - enroller
@@ -66,7 +68,6 @@ services:
     env_file:
       - variables.env
     hostname: trafficops
-    image: trafficops-go
     volumes:
       - shared:/shared
 
@@ -78,6 +79,7 @@ services:
       dockerfile: infrastructure/cdn-in-a-box/traffic_ops/Dockerfile
       args:
         TRAFFIC_OPS_RPM: infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
+    image: cdn-ops-perl
     depends_on:
       - db
       - enroller
@@ -85,7 +87,6 @@ services:
     env_file:
       - variables.env
     hostname: trafficops-perl
-    image: trafficops-perl
     # TODO: change to expose: "60443" to limit to containers
     volumes:
       - ./traffic_ops/ca:/ca
@@ -99,13 +100,13 @@ services:
       dockerfile: traffic_portal/Dockerfile
       args:
         TRAFFIC_PORTAL_RPM: traffic_portal/traffic_portal.rpm
+    image: cdn-portal
     depends_on:
       - enroller
     domainname: infra.ciab.test
     env_file:
       - variables.env
     hostname: trafficportal
-    image: trafficportal
     volumes:
       - shared:/shared
 
@@ -116,6 +117,7 @@ services:
       dockerfile: traffic_monitor/Dockerfile
       args:
         TRAFFIC_MONITOR_RPM: traffic_monitor/traffic_monitor.rpm
+    image: cdn-monitor
     depends_on:
       - enroller
     volumes:
@@ -124,7 +126,6 @@ services:
     env_file:
       - variables.env
     hostname: trafficmonitor
-    image: trafficmonitor
 
   # trafficrouter routes clients to the most optimal cache
   trafficrouter:
@@ -134,6 +135,7 @@ services:
       args:
         TRAFFIC_ROUTER_RPM: traffic_router/traffic_router.rpm
         TOMCAT_RPM: traffic_router/tomcat.rpm
+    image: cdn-router
     depends_on:
       - enroller
     domainname: infra.ciab.test
@@ -148,6 +150,7 @@ services:
     build:
       context: .
       dockerfile: traffic_stats/Dockerfile
+    image: cdn-stats
     depends_on:
       - enroller
       - influxdb
@@ -162,6 +165,7 @@ services:
     build:
       context: .
       dockerfile: traffic_stats/Dockerfile-influxdb
+    image: cdn-db
     hostname: influxdb
     domainname: infra.ciab.test
     depends_on:
@@ -176,6 +180,7 @@ services:
     build:
       context: .
       dockerfile: traffic_vault/Dockerfile
+    image: cdn-vault
     depends_on:
       - enroller
     environment:
@@ -196,6 +201,7 @@ services:
     build:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/edge/Dockerfile
+    image: cdn-edge-tier
     domainname: infra.ciab.test
     env_file:
       - variables.env
@@ -210,6 +216,7 @@ services:
     build:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/mid/Dockerfile
+    image: cdn-mid-tier
     domainname: infra.ciab.test
     env_file:
       - variables.env
@@ -223,6 +230,7 @@ services:
     build:
       context: .
       dockerfile: origin/Dockerfile
+    image: cdn-service-server
     depends_on:
       - enroller
     domainname: infra.ciab.test
@@ -239,6 +247,7 @@ services:
     build:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/enroller/Dockerfile
+    image: cdn-enroller
     depends_on:
       - dns
     env_file:
@@ -252,6 +261,7 @@ services:
     build:
       context: .
       dockerfile: dns/Dockerfile
+    image: cdn-dns
     env_file:
       - variables.env
     volumes:
