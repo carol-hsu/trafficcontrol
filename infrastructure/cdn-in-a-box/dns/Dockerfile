@@ -35,9 +35,9 @@ ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
 
 COPY dns/named.conf.local /etc/bind
 COPY dns/named.conf.options /etc/bind
-COPY dns/zone.ciab.test /etc/bind
-COPY dns/zone.ip4.arpa /etc/bind
-COPY dns/zone.ip6.arpa /etc/bind
+COPY dns/zone.coc.gatech /etc/bind
+COPY dns/zone.ip4.arpa.gatech /etc/bind/zone.ip4.arpa
+COPY dns/zone.ip6.arpa.gatech /etc/bind/zone.ip6.arpa
 COPY traffic_ops/to-access.sh /
 COPY enroller/server_template.json /
 

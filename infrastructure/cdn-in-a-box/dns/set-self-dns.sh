@@ -21,11 +21,13 @@
 set -eu
 
 bind_zone_dir='/etc/bind'
-bind_zone_file='zone.ciab.test'
+#bind_zone_file='zone.ciab.test'
+bind_zone_file='zone.coc.gatech'
 
 bind_zone_file_path="${bind_zone_dir}/${bind_zone_file}"
 
-domain='infra.ciab.test'
+#domain='infra.ciab.test'
+domain='kernel.coc.gatech'
 origin="${domain}."
 origin_line="\$ORIGIN ${origin}"
 

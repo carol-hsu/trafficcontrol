@@ -20,10 +20,16 @@
 
 set -eu
 
+#dns_container_hostname='dns'
+#
+#dns_domain='ciab.test'
+#dns_search_domains='infra.ciab.test ciab.test'
+
 dns_container_hostname='dns'
 
-dns_domain='ciab.test'
-dns_search_domains='infra.ciab.test ciab.test'
+dns_domain='coc.gatech'
+dns_search_domains='kernel.coc.gatech coc.gatech'
+
 
 while ! dig "@${dns_container_hostname}" "${dns_container_hostname}"; do
 	printf "Waiting for dns container \"${dns_container_hostname}\" to serve...\n"

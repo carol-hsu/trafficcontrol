@@ -15,14 +15,32 @@
 # specific language governing permissions and limitations
 # under the License.
 
-zone "ciab.test" {
+#zone "coc.gatech" {
+#  type master;
+#  file "/etc/bind/zone.coc.gatech";
+#  forwarders {};
+#  allow-update { key coc.gatech.; };
+#};
+#
+#zone "239.16.172.in-addr.arpa" IN {
+#  type master;
+#  file "/etc/bind/zone.ip4.arpa";
+#  forwarders {};
+#};
+#zone "0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa" IN {
+#  type master;
+#  file "/etc/bind/zone.ip6.arpa";
+#  forwarders {};
+#};
+
+zone "coc.gatech" {
   type master;
-  file "/etc/bind/zone.ciab.test";
+  file "/etc/bind/zone.coc.gatech";
   forwarders {};
-  allow-update { key ciab.test.; };
+  allow-update { key coc.gatech.; };
 };
 
-zone "239.16.172.in-addr.arpa" IN {
+zone "0.168.192.in-addr.arpa" IN {
   type master;
   file "/etc/bind/zone.ip4.arpa";
   forwarders {};
@@ -32,3 +50,4 @@ zone "0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa" IN {
   file "/etc/bind/zone.ip6.arpa";
   forwarders {};
 };
+
