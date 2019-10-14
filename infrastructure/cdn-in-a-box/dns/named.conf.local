@@ -33,11 +33,11 @@
 #  forwarders {};
 #};
 
-zone "coc.gatech" {
+zone "default.svc.cluster.local" {
   type master;
-  file "/etc/bind/zone.coc.gatech";
+  file "/etc/bind/zone.default.svc.cluster.local";
   forwarders {};
-  allow-update { key coc.gatech.; };
+  allow-update { key default.svc.cluster.local.; };
 };
 
 zone "0.168.192.in-addr.arpa" IN {

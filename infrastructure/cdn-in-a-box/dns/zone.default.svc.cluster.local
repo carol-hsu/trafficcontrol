@@ -15,18 +15,18 @@
 ; specific language governing permissions and limitations
 ; under the License.
 
-$ORIGIN coc.gatech.
+$ORIGIN default.svc.cluster.local.
 $TTL 30 
-@   IN SOA  dns.kernel.coc.gatech. hostmaster.coc.gatech. (
+@   IN SOA  dns.infra.default.svc.cluster.local. hostmaster.default.svc.cluster.local. (
         0000000001; serial
         7200      ; refresh (2 hours)
         3600      ; retry (1 hour)
         604800    ; expire (1 week)
         38400     ; minimum (10 hours 40 minutes)
         )
-									IN NS   dns.kernel.coc.gatech.
+									IN NS   dns.infra.default.svc.cluster.local.
 
-$ORIGIN kernel.coc.gatech.
+$ORIGIN infra.default.svc.cluster.local.
 
-$ORIGIN mycdn.coc.gatech.
-@                 NS   trafficrouter.kernel.coc.gatech.
+$ORIGIN mycdn.default.svc.cluster.local.
+@                 NS   trafficrouter.infra.default.svc.cluster.local.

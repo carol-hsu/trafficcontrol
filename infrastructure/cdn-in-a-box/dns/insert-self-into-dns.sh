@@ -20,7 +20,7 @@
 
 set -eu
 
-domain="ciab.test"
+domain="default.svc.cluster.local"
 shared_dns_dir="/shared/dns"
 dns_key_file_name="K${domain}.private"
 

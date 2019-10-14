@@ -27,8 +27,8 @@ set -eu
 
 dns_container_hostname='dns'
 
-dns_domain='coc.gatech'
-dns_search_domains='kernel.coc.gatech coc.gatech'
+dns_domain='default.svc.cluster.local'
+dns_search_domains='infra.default.svc.cluster.local default.svc.cluster.local'
 
 
 while ! dig "@${dns_container_hostname}" "${dns_container_hostname}"; do
