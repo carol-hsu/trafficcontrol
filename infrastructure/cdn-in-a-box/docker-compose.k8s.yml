@@ -42,7 +42,7 @@ services:
       dockerfile: traffic_ops/Dockerfile-db
     image: cdn-ops-db
     hostname: db
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     depends_on:
       - dns
     volumes:
@@ -64,7 +64,7 @@ services:
       - db
       - enroller
       - trafficops-perl
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficops
@@ -83,7 +83,7 @@ services:
     depends_on:
       - db
       - enroller
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficops-perl
@@ -103,7 +103,7 @@ services:
     image: cdn-portal
     depends_on:
       - enroller
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficportal
@@ -122,7 +122,7 @@ services:
       - enroller
     volumes:
       - shared:/shared
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficmonitor
@@ -138,7 +138,7 @@ services:
     image: cdn-router
     depends_on:
       - enroller
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficrouter
@@ -154,7 +154,7 @@ services:
     depends_on:
       - enroller
       - influxdb
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficstats
@@ -167,7 +167,7 @@ services:
       dockerfile: traffic_stats/Dockerfile-influxdb
     image: cdn-db
     hostname: influxdb
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     depends_on:
       - dns
     env_file:
@@ -190,7 +190,7 @@ services:
     volumes:
       - schemas:/etc/riak/schemas
       - shared:/shared
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: trafficvault
@@ -202,7 +202,7 @@ services:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/edge/Dockerfile
     image: cdn-edge-tier
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: edge
@@ -217,7 +217,7 @@ services:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/mid/Dockerfile
     image: cdn-mid-tier
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: mid
@@ -233,7 +233,7 @@ services:
     image: cdn-service-server
     depends_on:
       - enroller
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
     hostname: origin
@@ -267,7 +267,7 @@ services:
     volumes:
       - shared:/shared
     hostname: dns
-    domainname: infra.ciab.test
+    domainname: infra.default.svc.cluster.local
 
 volumes:
   schemas:
