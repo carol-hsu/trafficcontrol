@@ -24,6 +24,8 @@ $ docker-compose -f docker-compose.k8s.yml build
 
 3. create environment variables info
 ```
-$ kubectl create configmap cdn-config --from-file=../variables.env
+// the variable in variables.env is different from the one in upper directory.
+// changed to the settings in our k8s cluster
+$ kubectl create configmap cdn-config --from-file=variables.env
 ```
 

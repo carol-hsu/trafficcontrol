@@ -20,16 +20,10 @@
 
 set -eu
 
-#dns_container_hostname='dns'
-#
-#dns_domain='ciab.test'
-#dns_search_domains='infra.ciab.test ciab.test'
-
 dns_container_hostname='dns'
 
-dns_domain='default.svc.cluster.local'
-dns_search_domains='infra.default.svc.cluster.local default.svc.cluster.local'
-
+dns_domain='ciab.test'
+dns_search_domains='infra.ciab.test ciab.test'
 
 while ! dig "@${dns_container_hostname}" "${dns_container_hostname}"; do
 	printf "Waiting for dns container \"${dns_container_hostname}\" to serve...\n"

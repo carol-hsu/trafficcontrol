@@ -33,11 +33,13 @@ ADD dns/entrypoint.sh /sbin/
 
 ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
 
-COPY dns/named.conf.local /etc/bind
-COPY dns/named.conf.options /etc/bind
-COPY dns/zone.default.svc.cluster.local /etc/bind
-COPY dns/zone.ip4.arpa.k8s /etc/bind/zone.ip4.arpa
-COPY dns/zone.ip6.arpa.k8s /etc/bind/zone.ip6.arpa
+ADD dns/named.conf.local \
+    dns/named.conf.options \
+    dns/zone.ciab.test \
+	dns/zone.ip4.arpa \
+	dns/zone.ip6.arpa \
+	/etc/bind/
+
 COPY traffic_ops/to-access.sh /
 COPY enroller/server_template.json /
 

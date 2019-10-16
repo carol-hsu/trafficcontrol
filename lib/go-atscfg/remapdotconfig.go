@@ -168,10 +168,6 @@ func GetServerConfigRemapDotConfigForEdge(
 	atsMajorVersion int,
 	header string,
 ) string {
-	for name, val := range serverPackageParamData {
-		serverPackageParamData[name] = strings.Replace(val, "__HOSTNAME__", server.HostName+"."+server.DomainName, -1)
-	}
-
 	textLines := []string{}
 
 	for _, ds := range dses {
@@ -325,10 +321,6 @@ type RemapLine struct {
 func MakeEdgeDSDataRemapLines(ds RemapConfigDSData, server *ServerInfo) ([]RemapLine, error) {
 	if ds.RegexType == nil || tc.DSMatchType(*ds.RegexType) != tc.DSMatchTypeHostRegex || ds.OriginFQDN == nil || *ds.OriginFQDN == "" {
 		return nil, nil
-	}
-
-	if ds.OriginFQDN == nil {
-		return nil, errors.New("ds missing origin fqdn")
 	}
 	if ds.Pattern == nil {
 		return nil, errors.New("ds missing regex pattern")

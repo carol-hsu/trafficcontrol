@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_REGISTRY=gabbro:30500
+DOCKER_REGISTRY=PRIVATE_REGISTRY_ENDPOINT
 
 docker tag cdn-ops-db $DOCKER_REGISTRY/cdn-ops-db
 docker push $DOCKER_REGISTRY/cdn-ops-db

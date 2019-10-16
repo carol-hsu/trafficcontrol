@@ -15,32 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-#zone "coc.gatech" {
-#  type master;
-#  file "/etc/bind/zone.coc.gatech";
-#  forwarders {};
-#  allow-update { key coc.gatech.; };
-#};
-#
-#zone "239.16.172.in-addr.arpa" IN {
-#  type master;
-#  file "/etc/bind/zone.ip4.arpa";
-#  forwarders {};
-#};
-#zone "0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa" IN {
-#  type master;
-#  file "/etc/bind/zone.ip6.arpa";
-#  forwarders {};
-#};
-
-zone "default.svc.cluster.local" {
+zone "ciab.test" {
   type master;
-  file "/etc/bind/zone.default.svc.cluster.local";
+  file "/etc/bind/zone.ciab.test";
   forwarders {};
-  allow-update { key default.svc.cluster.local.; };
+  allow-update { key ciab.test.; };
 };
 
-zone "0.168.192.in-addr.arpa" IN {
+zone "239.16.172.in-addr.arpa" IN {
   type master;
   file "/etc/bind/zone.ip4.arpa";
   forwarders {};

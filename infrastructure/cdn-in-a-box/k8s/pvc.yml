@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-secret-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/secrets"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-ops-ca-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/ops-ca"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: cdn-secret
+spec:
+  storageClassName: ""
+  volumeName: cdn-secret-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: cdn-ops-ca
+spec:
+  storageClassName: ""
+  volumeName: cdn-ops-ca-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

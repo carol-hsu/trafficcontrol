@@ -39,6 +39,8 @@ type TrafficControl struct {
 	Regions                        []tc.Region                        `json:"regions"`
 	Roles                          []tc.Role                          `json:"roles"`
 	Servers                        []tc.Server                        `json:"servers"`
+	ServerServerCapabilities       []tc.ServerServerCapability        `json:"serverServerCapabilities"`
+	ServerCapabilities             []tc.ServerCapability              `json:"serverCapabilities"`
 	Statuses                       []tc.StatusNullable                `json:"statuses"`
 	StaticDNSEntries               []tc.StaticDNSEntry                `json:"staticdnsentries"`
 	Tenants                        []tc.Tenant                        `json:"tenants"`
@@ -48,6 +50,7 @@ type TrafficControl struct {
 	Serverchecks                   []tc.ServercheckRequestNullable    `json:"serverchecks"`
 	Users                          []tc.User                          `json:"users"`
 	Jobs                           []JobRequest                       `json:"jobs"`
+	InvalidationJobs               []tc.InvalidationJobInput          `json:"invalidationJobs"`
 }
 
 type JobRequest struct {

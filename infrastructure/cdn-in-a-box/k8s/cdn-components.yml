@@ -1,0 +1,145 @@
+## DNS server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-dns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: dns
+  template:
+    metadata:
+      labels:
+        func: dns
+    spec:
+      hostname: dns
+      subdomain: infra
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      containers:
+      - name: dns
+        image: gabbro:30500/cdn-dns-origin
+        imagePullPolicy: Never
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns
+spec:
+  selector:
+    func: dns
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 9353
+      targetPort: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 9353
+      targetPort: 53
+#---
+### Edge and Mid cache tier
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: cdn-edge-tier
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      func: cache
+#      role: edge
+#  template:
+#    metadata:
+#      labels:
+#        func: cache
+#        role: edge
+#    spec:
+#      hostname: edge
+#      subdomain: infra
+#      volumes:
+#      - name: secret-dir
+#        persistentVolumeClaim:
+#          claimName: cdn-secret
+#      containers:
+#      - name: edge-tier
+#        image: gabbro:30500/cdn-edge-tier
+#        imagePullPolicy: Never
+#        volumeMounts:
+#          - mountPath: /shared
+#            name: secret-dir
+#        envFrom:
+#          - configMapRef:
+#              name: cdn-config
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: edge
+#spec:
+#  selector:
+#    func: cache
+#    role: edge
+#  ports:
+#    - port: 9000
+#      targetPort: 80
+##---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: cdn-mid-tier
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      func: cache
+#      role: mid
+#  template:
+#    metadata:
+#      labels:
+#        func: cache
+#        role: mid
+#    spec:
+#      hostname: mid
+#      subdomain: infra
+#      volumes:
+#      - name: secret-dir
+#        persistentVolumeClaim:
+#          claimName: cdn-secret
+#      containers:
+#      - name: mid-tier
+#        image: gabbro:30500/cdn-mid-tier
+#        imagePullPolicy: Never
+#        volumeMounts:
+#          - mountPath: /shared
+#            name: secret-dir
+#        envFrom:
+#          - configMapRef:
+#              name: cdn-config
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: mid
+#spec:
+#  selector:
+#    func: cache
+#    role: mid
+#  ports:
+#    - port: 9000
+#      targetPort: 80
+
+## Enroller
+
+## 2 DBs: for influxdb: traffic stats, and for ops-db: traffic operations
+
+
