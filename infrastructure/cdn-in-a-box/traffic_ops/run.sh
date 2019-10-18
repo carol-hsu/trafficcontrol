@@ -39,8 +39,8 @@ do
 	if [[ -z $$v ]]; then echo "$v is unset"; exit 1; fi
 done
 
-set-dns.sh
-insert-self-into-dns.sh
+#set-dns.sh
+#insert-self-into-dns.sh
 
 set-to-ips-from-dns.sh
 

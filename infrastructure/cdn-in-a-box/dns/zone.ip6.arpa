@@ -26,6 +26,7 @@ $TTL 30 ; 30 seconds
               IN NS    dns.infra.ciab.test.
 1.0.0         IN PTR   gw.infra.ciab.test.
 0.1.0         IN PTR   db.infra.ciab.test.
+0.1.1         IN PTR   influx.infra.ciab.test.
 0.2.0         IN PTR   trafficops.infra.ciab.test.
 0.2.1         IN PTR   trafficops-perl.infra.ciab.test.
 0.3.0         IN PTR   trafficportal.infra.ciab.test.

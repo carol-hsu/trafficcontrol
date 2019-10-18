@@ -17,8 +17,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set-dns.sh
-insert-self-into-dns.sh
+#set-dns.sh
+#insert-self-into-dns.sh
 
 . /to-access.sh
 

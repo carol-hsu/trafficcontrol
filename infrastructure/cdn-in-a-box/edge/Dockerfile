@@ -30,7 +30,8 @@ ADD https://ci.trafficserver.apache.org/RPMS/CentOS7/trafficserver-devel-7.1.4-2
 
 RUN yum install -y bind-utils kyotocabinet-libs epel-release initscripts iproute net-tools nmap-ncat gettext autoconf automake libtool gcc-c++ cronie glibc-devel openssl-devel
 RUN yum install -y /trafficserver.rpm /trafficserver-devel.rpm jq python36-psutil python36-typing python36-setuptools python36-pip logrotate && yum clean all
-RUN pip3 install --upgrade pip && pip3 install requests urllib3 distro
+# to avoid error: TypeError: 'module' object is not callable
+RUN python3 -m pip install requests urllib3 distro
 
 ADD traffic_server/plugins/astats_over_http/astats_over_http.c traffic_server/plugins/astats_over_http/Makefile.am /
 
@@ -60,9 +61,9 @@ ADD infrastructure/cdn-in-a-box/cache/run.sh \
     infrastructure/cdn-in-a-box/enroller/server_template.json \
     /
 
-ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
-    infrastructure/cdn-in-a-box/dns/set-dns.sh \
-    /usr/local/sbin/
+#ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
+#    infrastructure/cdn-in-a-box/dns/set-dns.sh \
+#    /usr/local/sbin/
 
 ADD infrastructure/cdn-in-a-box/edge/run.sh /opt/init.d/99-run.sh
 

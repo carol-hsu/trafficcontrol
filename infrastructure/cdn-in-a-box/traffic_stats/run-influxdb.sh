@@ -20,8 +20,8 @@ set -e
 set -x
 set -m
 
-set-dns.sh
-insert-self-into-dns.sh
+#set-dns.sh
+#insert-self-into-dns.sh
 
 source /to-access.sh
 

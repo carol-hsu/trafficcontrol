@@ -24,8 +24,8 @@ RUN apt-get update && \
 ADD enroller/server_template.json \
     traffic_ops/to-access.sh \
     traffic_stats/run-influxdb.sh \
-    dns/insert-self-into-dns.sh \
-    dns/set-dns.sh \
+#    dns/insert-self-into-dns.sh \
+#    dns/set-dns.sh \
     /
 
 ENTRYPOINT ["/run-influxdb.sh"]

@@ -21,8 +21,8 @@ set -e
 set -x
 set -m
 
-sh /set-dns.sh
-sh /insert-self-into-dns.sh
+#sh /set-dns.sh
+#sh /insert-self-into-dns.sh
 
 source /to-access.sh
 

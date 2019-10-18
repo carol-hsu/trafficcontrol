@@ -41,8 +41,6 @@ services:
       context: .
       dockerfile: traffic_ops/Dockerfile-db
     image: cdn-ops-db
-    hostname: db
-    domainname: infra.default.svc.cluster.local
     depends_on:
       - dns
     volumes:
@@ -64,10 +62,8 @@ services:
       - db
       - enroller
       - trafficops-perl
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficops
     volumes:
       - shared:/shared
 
@@ -83,10 +79,8 @@ services:
     depends_on:
       - db
       - enroller
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficops-perl
     # TODO: change to expose: "60443" to limit to containers
     volumes:
       - ./traffic_ops/ca:/ca
@@ -103,10 +97,8 @@ services:
     image: cdn-portal
     depends_on:
       - enroller
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficportal
     volumes:
       - shared:/shared
 
@@ -122,10 +114,8 @@ services:
       - enroller
     volumes:
       - shared:/shared
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficmonitor
 
   # trafficrouter routes clients to the most optimal cache
   trafficrouter:
@@ -138,10 +128,8 @@ services:
     image: cdn-router
     depends_on:
       - enroller
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficrouter
     volumes:
       - shared:/shared
 
@@ -154,10 +142,8 @@ services:
     depends_on:
       - enroller
       - influxdb
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficstats
     volumes:
       - shared:/shared
 
@@ -165,9 +151,7 @@ services:
     build:
       context: .
       dockerfile: traffic_stats/Dockerfile-influxdb
-    image: cdn-db
-    hostname: influxdb
-    domainname: infra.default.svc.cluster.local
+    image: cdn-stat-db
     depends_on:
       - dns
     env_file:
@@ -190,10 +174,8 @@ services:
     volumes:
       - schemas:/etc/riak/schemas
       - shared:/shared
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: trafficvault
 
   # edge cache
   edge:
@@ -202,10 +184,8 @@ services:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/edge/Dockerfile
     image: cdn-edge-tier
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: edge
     volumes:
 #      - ./edge/run.sh:/opt/init.d/99-run.sh
       - shared:/shared
@@ -233,10 +213,8 @@ services:
     image: cdn-service-server
     depends_on:
       - enroller
-    domainname: infra.default.svc.cluster.local
     env_file:
       - variables.env
-    hostname: origin
     volumes:
       - shared:/shared
       - ./origin/content:/var/www/html
@@ -252,7 +230,6 @@ services:
       - dns
     env_file:
       - variables.env
-    hostname: enroller
     volumes:
       - shared:/shared
 
@@ -266,8 +243,6 @@ services:
       - variables.env
     volumes:
       - shared:/shared
-    hostname: dns
-    domainname: infra.default.svc.cluster.local
 
 volumes:
   schemas:
