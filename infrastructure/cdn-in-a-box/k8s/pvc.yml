@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/secrets"
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -22,12 +22,13 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/ops-ca"
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: cdn-secret
+  name: cdn-secret
+  namespace: cdn
 spec:
   storageClassName: ""
   volumeName: cdn-secret-pv
@@ -40,7 +41,8 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: cdn-ops-ca
+  name: cdn-ops-ca
+  namespace: cdn
 spec:
   storageClassName: ""
   volumeName: cdn-ops-ca-pv

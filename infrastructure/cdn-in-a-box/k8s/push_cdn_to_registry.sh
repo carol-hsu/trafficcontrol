@@ -22,8 +22,8 @@ docker tag cdn-service-server $DOCKER_REGISTRY/cdn-service-server
 docker push $DOCKER_REGISTRY/cdn-service-server
 docker tag cdn-vault $DOCKER_REGISTRY/cdn-vault
 docker push $DOCKER_REGISTRY/cdn-vault
-docker tag cdn-db $DOCKER_REGISTRY/cdn-db
-docker push $DOCKER_REGISTRY/cdn-db
+docker tag cdn-db $DOCKER_REGISTRY/cdn-stat-db
+docker push $DOCKER_REGISTRY/cdn-stat-db
 docker tag cdn-edge-tier $DOCKER_REGISTRY/cdn-edge-tier
 docker push $DOCKER_REGISTRY/cdn-edge-tier
 docker tag cdn-dns $DOCKER_REGISTRY/cdn-dns

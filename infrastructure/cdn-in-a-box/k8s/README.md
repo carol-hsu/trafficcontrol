@@ -20,12 +20,30 @@ $ docker-compose -f docker-compose.k8s.yml build
 
 ```
 
-2. create volume
+2. create namespace
 
-3. create environment variables info
+under this directory
+
 ```
-// the variable in variables.env is different from the one in upper directory.
+$ kubectl create -f namespace.yml
+```
+
+3. create volume
+
+need to setup NFS by yourself and create pv and pvc pairs
+
+```
+$ kubectl create -f pvc.yml
+```
+
+4. create environment variables info
+```
 // changed to the settings in our k8s cluster
-$ kubectl create configmap cdn-config --from-file=variables.env
+$ kubectl create -f env.yml
 ```
 
+5. finally, creat CDN components
+
+```
+$ kubectl create -f cdn.yml
+```
