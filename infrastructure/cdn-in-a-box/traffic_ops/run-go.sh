@@ -93,7 +93,8 @@ do
   sleep 3
   source "$X509_CA_ENV_FILE"
 done
-to-add-sslkeys $CDN_NAME $ds_name "*.demo1.mycdn.ciab.test" $X509_DEMO1_CERT_FILE $X509_DEMO1_REQUEST_FILE $X509_DEMO1_KEY_FILE
+#to-add-sslkeys $CDN_NAME $ds_name "*.demo1.mycdn.ciab.test" $X509_DEMO1_CERT_FILE $X509_DEMO1_REQUEST_FILE $X509_DEMO1_KEY_FILE
+to-add-sslkeys $CDN_NAME $ds_name "*.demo1.default.svc.cluster.local" $X509_DEMO1_CERT_FILE $X509_DEMO1_REQUEST_FILE $X509_DEMO1_KEY_FILE
 
 ### Automatic Queue/Snapshot ###
 if [[ "$AUTO_SNAPQUEUE_ENABLED" = true ]]; then

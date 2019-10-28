@@ -197,7 +197,7 @@ services:
       context: ../..
       dockerfile: infrastructure/cdn-in-a-box/mid/Dockerfile
     image: cdn-mid-tier
-    domainname: infra.default.svc.cluster.local
+    domainname: cdn.svc.cluster.local
     env_file:
       - variables.env
     hostname: mid
@@ -238,6 +238,8 @@ services:
     build:
       context: .
       dockerfile: dns/Dockerfile
+    domainname: cdn.svc.cluster.local
+    hostname: dns
     image: cdn-dns
     env_file:
       - variables.env

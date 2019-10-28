@@ -16,28 +16,28 @@
 ; under the License.
 $ORIGIN 0.99.10.in-addr.arpa.
 $TTL 30 ; 30 seconds
-@   IN SOA  dns.infra.ciab.test. admin.infra.ciab.test. (
+@   IN SOA  dns.cdn.svc.cluster.local. admin.cdn.svc.cluster.local. (
         0000000001 ; serial
         7200       ; refresh
         3600       ; retry
         604800     ; expire
         38400      ; minimum
 )
-              IN NS    dns.infra.ciab.test.
-1             IN PTR   gw.infra.ciab.test.
-10            IN PTR   db.infra.ciab.test.
-11            IN PTR   influxdb.infra.ciab.test.
-20            IN PTR   trafficops.infra.ciab.test.
-21            IN PTR   trafficops-perl.infra.ciab.test.
-30            IN PTR   trafficportal.infra.ciab.test.
-40            IN PTR   trafficmonitor.infra.ciab.test.
-50            IN PTR   trafficvault.infra.ciab.test.
-60            IN PTR   trafficrouter.infra.ciab.test.
-100           IN PTR   edge.infra.ciab.test.
-120           IN PTR   mid.infra.ciab.test.
-140           IN PTR   origin.infra.ciab.test.
-200           IN PTR   enroller.infra.ciab.test.
-233           IN PTR   socksproxy.infra.ciab.test.
-250           IN PTR   client.infra.ciab.test.
-251           IN PTR   vnc.infra.ciab.test.
-254           IN PTR   dns.infra.ciab.test.
+              IN NS    dns.cdn.svc.cluster.local.
+1             IN PTR   gw.cdn.svc.cluster.local.
+10            IN PTR   db.cdn.svc.cluster.local.
+11            IN PTR   influxdb.cdn.svc.cluster.local.
+20            IN PTR   trafficops.cdn.svc.cluster.local.
+21            IN PTR   trafficops-perl.cdn.svc.cluster.local.
+30            IN PTR   trafficportal.cdn.svc.cluster.local.
+40            IN PTR   trafficmonitor.cdn.svc.cluster.local.
+50            IN PTR   trafficvault.cdn.svc.cluster.local.
+60            IN PTR   trafficrouter.cdn.svc.cluster.local.
+100           IN PTR   edge.cdn.svc.cluster.local.
+120           IN PTR   mid.cdn.svc.cluster.local.
+140           IN PTR   origin.cdn.svc.cluster.local.
+200           IN PTR   enroller.cdn.svc.cluster.local.
+233           IN PTR   socksproxy.cdn.svc.cluster.local.
+250           IN PTR   client.cdn.svc.cluster.local.
+251           IN PTR   vnc.cdn.svc.cluster.local.
+254           IN PTR   dns.cdn.svc.cluster.local.

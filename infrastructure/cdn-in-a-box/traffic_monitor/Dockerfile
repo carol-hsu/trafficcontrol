@@ -47,9 +47,9 @@ ADD enroller/server_template.json \
     traffic_monitor/run.sh \
     /
 
-ADD dns/set-dns.sh \
-    dns/insert-self-into-dns.sh \
-    /usr/local/sbin/
+#ADD dns/set-dns.sh \
+#    dns/insert-self-into-dns.sh \
+#    /usr/local/sbin/
 
 EXPOSE 80
 #ADD traffic_monitor/run.sh /

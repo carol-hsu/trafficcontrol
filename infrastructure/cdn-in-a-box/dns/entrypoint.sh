@@ -54,7 +54,7 @@ create_pid_dir
 create_bind_data_dir
 create_bind_cache_dir
 
-set-self-dns.sh
+#set-self-dns.sh
 
 set-dns-update.sh & # needs to execute after the DNS server starts
 

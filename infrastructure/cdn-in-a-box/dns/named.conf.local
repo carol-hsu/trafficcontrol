@@ -15,11 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-zone "ciab.test" {
+zone "svc.cluster.local" {
   type master;
-  file "/etc/bind/zone.ciab.test";
+  file "/etc/bind/zone.svc.cluster.local";
   forwarders {};
-  allow-update { key ciab.test.; };
+  allow-update { key svc.cluster.local.; };
 };
 
 #zone "239.16.172.in-addr.arpa" IN {

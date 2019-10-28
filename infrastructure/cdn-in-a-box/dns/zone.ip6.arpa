@@ -16,28 +16,28 @@
 ; under the License.
 $ORIGIN 0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa.
 $TTL 30 ; 30 seconds
-@   IN SOA  dns.infra.ciab.test. admin.infra.ciab.test. (
+@   IN SOA  dns.cdn.svc.cluster.local. admin.cdn.svc.cluster.local. (
         0000000001 ; serial
         7200       ; refresh
         3600       ; retry
         604800     ; expire
         38400      ; minimum
 )
-              IN NS    dns.infra.ciab.test.
-1.0.0         IN PTR   gw.infra.ciab.test.
-0.1.0         IN PTR   db.infra.ciab.test.
-0.1.1         IN PTR   influx.infra.ciab.test.
-0.2.0         IN PTR   trafficops.infra.ciab.test.
-0.2.1         IN PTR   trafficops-perl.infra.ciab.test.
-0.3.0         IN PTR   trafficportal.infra.ciab.test.
-0.4.0         IN PTR   trafficmonitor.infra.ciab.test.
-0.5.0         IN PTR   trafficvault.infra.ciab.test.
-0.6.0         IN PTR   trafficrouter.infra.ciab.test.
-0.0.1         IN PTR   edge.infra.ciab.test.
-0.2.1         IN PTR   mid.infra.ciab.test.
-0.4.1         IN PTR   origin.infra.ciab.test.
-0.0.2         IN PTR   enroller.infra.ciab.test.
-3.3.2         IN PTR   socksproxy.infra.ciab.test.
-0.5.2         IN PTR   client.infra.ciab.test.
-1.5.2         IN PTR   vnc.infra.ciab.test.
-4.5.2         IN PTR   dns.infra.ciab.test.
+              IN NS    dns.cdn.svc.cluster.local.
+1.0.0         IN PTR   gw.cdn.svc.cluster.local.
+0.1.0         IN PTR   db.cdn.svc.cluster.local.
+0.1.1         IN PTR   influx.cdn.svc.cluster.local.
+0.2.0         IN PTR   trafficops.cdn.svc.cluster.local.
+0.2.1         IN PTR   trafficops-perl.cdn.svc.cluster.local.
+0.3.0         IN PTR   trafficportal.cdn.svc.cluster.local.
+0.4.0         IN PTR   trafficmonitor.cdn.svc.cluster.local.
+0.5.0         IN PTR   trafficvault.cdn.svc.cluster.local.
+0.6.0         IN PTR   trafficrouter.cdn.svc.cluster.local.
+0.0.1         IN PTR   edge.cdn.svc.cluster.local.
+0.2.1         IN PTR   mid.cdn.svc.cluster.local.
+0.4.1         IN PTR   origin.cdn.svc.cluster.local.
+0.0.2         IN PTR   enroller.cdn.svc.cluster.local.
+3.3.2         IN PTR   socksproxy.cdn.svc.cluster.local.
+0.5.2         IN PTR   client.cdn.svc.cluster.local.
+1.5.2         IN PTR   vnc.cdn.svc.cluster.local.
+4.5.2         IN PTR   dns.cdn.svc.cluster.local.

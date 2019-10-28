@@ -31,11 +31,12 @@ RUN echo 'APT::Install-Recommends 0;' >> /etc/apt/apt.conf.d/01norecommends \
 
 ADD dns/entrypoint.sh /sbin/
 
-ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
+#ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
+ADD dns/set-dns-update.sh /usr/local/sbin/
 
 ADD dns/named.conf.local \
     dns/named.conf.options \
-    dns/zone.ciab.test \
+    dns/zone.svc.cluster.local \
 	dns/zone.ip4.arpa \
 	dns/zone.ip6.arpa \
 	/etc/bind/
