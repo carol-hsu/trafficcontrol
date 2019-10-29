@@ -185,7 +185,7 @@ Options and Arguments
 
 .. option:: command
 
-	The :option;`command` specifies the operation to be performed on the database. It must be one of:
+	The :option:`command` specifies the operation to be performed on the database. It must be one of:
 
 	createdb
 		Creates the database for the current environment
@@ -263,8 +263,6 @@ To install the Traffic Ops Developer environment:
 	:Password:  ``password``
 
 #. Change the login credentials.
-
-	.. seealso:: :ref:`to-using`
 
 Test Cases
 ==========
