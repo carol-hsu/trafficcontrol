@@ -77,6 +77,9 @@ func TestCreateDeliveryServicesRequiredCapability(t *testing.T) {
 
 	mockTenantID(t, mock, 1)
 
+	arrayRows := sqlmock.NewRows([]string{"array"})
+	mock.ExpectQuery("SELECT ds.server FROM deliveryservice_server").WillReturnRows(arrayRows)
+
 	rows := sqlmock.NewRows([]string{"required_capability", "deliveryservice_id", "last_updated"}).AddRow(
 		util.StrPtr("mem"),
 		util.IntPtr(1),
@@ -127,16 +130,17 @@ func TestUnauthorizedCreateDeliveryServicesRequiredCapability(t *testing.T) {
 	mockTenantID(t, mock, 0)
 
 	userErr, sysErr, errCode := rc.Create()
-	if userErr != nil {
+
+	expErr := "not authorized on this tenant"
+	if userErr.Error() != expErr {
+		t.Fatalf("got %s; expected %s", userErr, expErr)
+	}
+
+	if sysErr != nil {
 		t.Fatalf(userErr.Error())
 	}
 
-	expErr := "checking tenant: not authorized on this tenant"
-	if sysErr.Error() != expErr {
-		t.Fatalf("got %s; expected %s", sysErr, expErr)
-	}
-
-	if got, want := errCode, http.StatusInternalServerError; got != want {
+	if got, want := errCode, http.StatusForbidden; got != want {
 		t.Fatalf(fmt.Sprintf("got %d; expected http status code %d", got, want))
 	}
 
@@ -228,7 +232,6 @@ func TestDeleteDeliveryServicesRequiredCapability(t *testing.T) {
 	defer db.Close()
 
 	mock.ExpectBegin()
-
 	mockTenantID(t, mock, 1)
 
 	mock.ExpectExec("DELETE").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -290,16 +293,17 @@ func TestUnauthorizedDeleteDeliveryServicesRequiredCapability(t *testing.T) {
 	mockTenantID(t, mock, 0)
 
 	userErr, sysErr, errCode := rc.Delete()
-	if userErr != nil {
+
+	expErr := "not authorized on this tenant"
+	if userErr.Error() != expErr {
+		t.Fatalf("got %s; expected %s", userErr, expErr)
+	}
+
+	if sysErr != nil {
 		t.Fatalf(userErr.Error())
 	}
 
-	expErr := "checking tenant: not authorized on this tenant"
-	if sysErr.Error() != expErr {
-		t.Fatalf("got %s; expected %s", sysErr, expErr)
-	}
-
-	if got, want := errCode, http.StatusInternalServerError; got != want {
+	if got, want := errCode, http.StatusForbidden; got != want {
 		t.Fatalf(fmt.Sprintf("got %d; expected http status code %d", got, want))
 	}
 

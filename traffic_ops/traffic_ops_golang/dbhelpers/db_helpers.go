@@ -274,6 +274,42 @@ func GetProfileIDFromName(name string, tx *sql.Tx) (int, bool, error) {
 	return id, true, nil
 }
 
+// GetServerCapabilitiesFromName returns the server's capabilities.
+func GetServerCapabilitiesFromName(name string, tx *sql.Tx) ([]string, error) {
+	var caps []string
+	q := `SELECT ARRAY(SELECT ssc.server_capability FROM server s JOIN server_server_capability ssc ON s.id = ssc.server WHERE s.host_name = $1 ORDER BY ssc.server_capability);`
+	rows, err := tx.Query(q, name)
+	if err != nil {
+		return nil, errors.New("querying server capabilities from name: " + err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(pq.Array(&caps)); err != nil {
+			return nil, errors.New("scanning capability: " + err.Error())
+		}
+	}
+	return caps, nil
+}
+
+// GetDSRequiredCapabilitiesFromID returns the server's capabilities.
+func GetDSRequiredCapabilitiesFromID(id int, tx *sql.Tx) ([]string, error) {
+	var caps []string
+	q := `SELECT ARRAY(SELECT drc.required_capability FROM deliveryservices_required_capability drc WHERE drc.deliveryservice_id = $1 ORDER BY drc.required_capability);`
+	rows, err := tx.Query(q, id)
+	if err != nil {
+		return nil, errors.New("querying deliveryservice required capabilities from id: " + err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(pq.Array(&caps)); err != nil {
+			return nil, errors.New("scanning capability: " + err.Error())
+		}
+	}
+	return caps, nil
+}
+
 // Returns true if the cdn exists
 func CDNExists(cdnName string, tx *sql.Tx) (bool, error) {
 	var id int
@@ -307,6 +343,92 @@ func GetCDNDomainFromName(tx *sql.Tx, cdnName tc.CDNName) (string, bool, error) 
 		return "", false, errors.New("Error querying CDN name: " + err.Error())
 	}
 	return domain, true, nil
+}
+
+// GetServerInfo returns a ServerInfo struct, whether the server exists, and an error (if one occurs).
+func GetServerInfo(serverID int, tx *sql.Tx) (tc.ServerInfo, bool, error) {
+	q := `
+SELECT
+  s.cachegroup as cachegroup_id,
+  s.cdn_id as cdn_id,
+  s.domain_name as domain_name,
+  s.host_name as host_name,
+  t.name as server_type
+FROM
+  server s
+JOIN type t ON s.type = t.id
+WHERE s.id = $1
+`
+	row := tc.ServerInfo{}
+	if err := tx.QueryRow(q, serverID).Scan(
+		&row.CachegroupID,
+		&row.CDNID,
+		&row.DomainName,
+		&row.HostName,
+		&row.Type,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return row, false, nil
+		}
+		return row, false, fmt.Errorf("querying server id %d: %v", serverID, err.Error())
+	}
+	return row, true, nil
+}
+
+// GetStatusByID returns a Status struct, a bool for whether or not a status of the given ID exists, and an error (if one occurs).
+func GetStatusByID(id int, tx *sql.Tx) (tc.StatusNullable, bool, error) {
+	q := `
+SELECT
+  description,
+  id,
+  last_updated,
+  name
+FROM
+  status s
+WHERE
+  id = $1
+`
+	row := tc.StatusNullable{}
+	if err := tx.QueryRow(q, id).Scan(
+		&row.Description,
+		&row.ID,
+		&row.LastUpdated,
+		&row.Name,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return row, false, nil
+		}
+		return row, false, fmt.Errorf("querying status id %d: %v", id, err.Error())
+	}
+	return row, true, nil
+}
+
+// GetStatusByName returns a Status struct, a bool for whether or not a status of the given name exists, and an error (if one occurs).
+func GetStatusByName(name string, tx *sql.Tx) (tc.StatusNullable, bool, error) {
+	q := `
+SELECT
+  description,
+  id,
+  last_updated,
+  name
+FROM
+  status s
+WHERE
+  name = $1
+`
+	row := tc.StatusNullable{}
+	if err := tx.QueryRow(q, name).Scan(
+		&row.Description,
+		&row.ID,
+		&row.LastUpdated,
+		&row.Name,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return row, false, nil
+		}
+		return row, false, fmt.Errorf("querying status name %s: %v", name, err.Error())
+	}
+	return row, true, nil
 }
 
 // GetServerIDFromName gets server id from a given name

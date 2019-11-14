@@ -26,6 +26,7 @@ import (
 
 func TestDeliveryServicesRequiredCapabilities(t *testing.T) {
 	WithObjs(t, []TCObj{CDNs, Types, Tenants, Users, Parameters, Profiles, Statuses, Divisions, Regions, PhysLocations, CacheGroups, Servers, ServerCapabilities, DeliveryServices, DeliveryServicesRequiredCapabilities}, func() {
+		InvalidDeliveryServicesRequiredCapabilityAddition(t)
 		GetTestDeliveryServicesRequiredCapabilities(t)
 	})
 }
@@ -40,25 +41,25 @@ func GetTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 		expected    int
 	}{
 		{
-			description: "get all deliveryservice required capabilities",
+			description: "get all deliveryservices required capabilities",
 			expected:    len(testData.DeliveryServicesRequiredCapabilities),
 		},
 		{
-			description: fmt.Sprintf("get all deliveryservice required capabilities by deliveryServiceID: %d", *ds1),
+			description: fmt.Sprintf("get all deliveryservices required capabilities by deliveryServiceID: %d", *ds1),
 			capability: tc.DeliveryServicesRequiredCapability{
 				DeliveryServiceID: ds1,
 			},
 			expected: 1,
 		},
 		{
-			description: fmt.Sprintf("get all deliveryservice required capabilities by xmlID: %s", *data[0].XMLID),
+			description: fmt.Sprintf("get all deliveryservices required capabilities by xmlID: %s", *data[0].XMLID),
 			capability: tc.DeliveryServicesRequiredCapability{
 				XMLID: data[0].XMLID,
 			},
 			expected: 1,
 		},
 		{
-			description: fmt.Sprintf("get all deliveryservice required capabilities by requiredCapability: %s", *data[0].RequiredCapability),
+			description: fmt.Sprintf("get all deliveryservices required capabilities by requiredCapability: %s", *data[0].RequiredCapability),
 			capability: tc.DeliveryServicesRequiredCapability{
 				RequiredCapability: data[0].RequiredCapability,
 			},
@@ -122,7 +123,7 @@ func CreateTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 		},
 	}
 
-	// Assign all required capability to delivery services listed in `tc-fixtrues.json`.
+	// Assign all required capability to delivery services listed in `tc-fixtures.json`.
 	for _, td := range testData.DeliveryServicesRequiredCapabilities {
 		var dsID int
 		if td.DeliveryServiceID != nil {
@@ -155,6 +156,87 @@ func CreateTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 			}
 		})
 	}
+}
+
+func InvalidDeliveryServicesRequiredCapabilityAddition(t *testing.T) {
+	// Tests that a capability cannot be made required if the DS's services do not have it assigned
+
+	// Get Delivery Capability for a DS
+	capabilities, _, err := TOSession.GetDeliveryServicesRequiredCapabilities(nil, util.StrPtr("ds1"), nil)
+	if err != nil {
+		t.Fatalf("cannot GET delivery service required capabilities: %v\n", err)
+	}
+	if len(capabilities) == 0 {
+		t.Fatalf("delivery service ds1 needs at least one capability required")
+	}
+
+	// First assign current capabilities to edge server so we can assign it to the DS
+	servers, _, err := TOSession.GetServerByHostName("atlanta-edge-01")
+	if err != nil {
+		t.Fatalf("cannot GET Server by hostname: %v\n", err)
+	}
+	if len(servers) < 1 {
+		t.Fatal("need at least one server to test invalid ds required capability assignment")
+	}
+
+	dsID := capabilities[0].DeliveryServiceID
+	sID := servers[0].ID
+	serverCaps := []tc.ServerServerCapability{}
+
+	for _, cap := range capabilities {
+		sCap := tc.ServerServerCapability{
+			ServerID:         &sID,
+			ServerCapability: cap.RequiredCapability,
+		}
+		_, _, err := TOSession.CreateServerServerCapability(sCap)
+		if err != nil {
+			t.Errorf("could not POST the server capability %v to server %v: %v\n", *cap.RequiredCapability, sID, err)
+		}
+		serverCaps = append(serverCaps, sCap)
+	}
+
+	// Assign server to ds
+	_, err = TOSession.CreateDeliveryServiceServers(*dsID, []int{sID}, false)
+	if err != nil {
+		t.Fatalf("cannot CREATE server delivery service assignement: %v\n", err)
+	}
+
+	// Create new bogus server capability
+	_, _, err = TOSession.CreateServerCapability(tc.ServerCapability{
+		Name: "newcap",
+	})
+	if err != nil {
+		t.Fatalf("cannot CREATE newcap server capability: %v\n", err)
+	}
+
+	// Attempt to assign to DS should fail
+	_, _, err = TOSession.CreateDeliveryServicesRequiredCapability(tc.DeliveryServicesRequiredCapability{
+		DeliveryServiceID:  dsID,
+		RequiredCapability: util.StrPtr("newcap"),
+	})
+	if err == nil {
+		t.Fatalf("expected error requiring a capability that is not associated on the delivery service's servers")
+	}
+
+	// Disassociate server from DS
+	_, _, err = TOSession.DeleteDeliveryServiceServer(*dsID, sID)
+	if err != nil {
+		t.Fatalf("could not DELETE the server %v from ds %v: %v\n", sID, *dsID, err)
+	}
+
+	// Remove server capabilities from server
+	for _, ssc := range serverCaps {
+		_, _, err := TOSession.DeleteServerServerCapability(*ssc.ServerID, *ssc.ServerCapability)
+		if err != nil {
+			t.Errorf("could not DELETE the server capability %v from server %v: %v\n", *ssc.ServerCapability, *ssc.Server, err)
+		}
+	}
+
+	// Delete server capability
+	_, _, err = TOSession.DeleteServerCapability("newcap")
+	if err != nil {
+		t.Fatalf("cannot DELETE newcap server capability: %v\n", err)
+	}
 
 }
 
@@ -173,7 +255,7 @@ func DeleteTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 
 	testCases := []testCase{
 		testCase{
-			description: fmt.Sprintf("delete a deliveryservice required capability with an invalid delivery service id; deliveryServiceID: -1, requiredCapability: %s", *capabilities[0].RequiredCapability),
+			description: fmt.Sprintf("delete a deliveryservices required capability with an invalid delivery service id; deliveryServiceID: -1, requiredCapability: %s", *capabilities[0].RequiredCapability),
 			capability: tc.DeliveryServicesRequiredCapability{
 				DeliveryServiceID:  util.IntPtr(-1),
 				RequiredCapability: capabilities[0].RequiredCapability,
@@ -181,7 +263,7 @@ func DeleteTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 			err: "no deliveryservice.RequiredCapability with that key found",
 		},
 		testCase{
-			description: fmt.Sprintf("delete a deliveryservice required capability with an invalid required capability; deliveryServiceID: %d, requiredCapability: bogus", *capabilities[0].DeliveryServiceID),
+			description: fmt.Sprintf("delete a deliveryservices required capability with an invalid required capability; deliveryServiceID: %d, requiredCapability: bogus", *capabilities[0].DeliveryServiceID),
 			capability: tc.DeliveryServicesRequiredCapability{
 				DeliveryServiceID:  capabilities[0].DeliveryServiceID,
 				RequiredCapability: util.StrPtr("bogus"),
@@ -192,7 +274,7 @@ func DeleteTestDeliveryServicesRequiredCapabilities(t *testing.T) {
 
 	for _, c := range capabilities {
 		t := testCase{
-			description: fmt.Sprintf("delete a deliveryservice required capability; deliveryServiceID: %d, requiredCapability: %s", *c.DeliveryServiceID, *c.RequiredCapability),
+			description: fmt.Sprintf("delete a deliveryservices required capability; deliveryServiceID: %d, requiredCapability: %s", *c.DeliveryServiceID, *c.RequiredCapability),
 			capability:  c,
 		}
 		testCases = append(testCases, t)

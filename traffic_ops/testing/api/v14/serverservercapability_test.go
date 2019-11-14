@@ -24,13 +24,12 @@ import (
 )
 
 func TestServerServerCapabilities(t *testing.T) {
-	WithObjs(t, []TCObj{CDNs, Types, Parameters, Profiles, Statuses, Divisions, Regions, PhysLocations, CacheGroups, Servers, ServerCapabilities, ServerServerCapabilities}, func() {
+	WithObjs(t, []TCObj{CDNs, Types, Tenants, Parameters, Profiles, Statuses, Divisions, Regions, PhysLocations, CacheGroups, Servers, DeliveryServices, ServerCapabilities, DeliveryServicesRequiredCapabilities, ServerServerCapabilities}, func() {
 		GetTestServerServerCapabilities(t)
 	})
 }
 
 func CreateTestServerServerCapabilities(t *testing.T) {
-
 	// Valid POSTs
 
 	// loop through server ServerCapabilities, assign FKs and create
@@ -61,7 +60,7 @@ func CreateTestServerServerCapabilities(t *testing.T) {
 		t.Error("expected to receive error when assigning a already assigned server capability\n")
 	}
 
-	// Attempt to assign an server capability with no ID
+	// Attempt to assign a server capability with no ID
 	sscNilID := tc.ServerServerCapability{
 		ServerCapability: ssc.ServerCapability,
 	}
@@ -70,7 +69,7 @@ func CreateTestServerServerCapabilities(t *testing.T) {
 		t.Error("expected to receive error when assigning a server capability without a server ID\n")
 	}
 
-	// Attempt to assign an server capability with no server capability
+	// Attempt to assign a server capability with no server capability
 	sscNilCapability := tc.ServerServerCapability{
 		ServerID: ssc.ServerID,
 	}
@@ -79,7 +78,7 @@ func CreateTestServerServerCapabilities(t *testing.T) {
 		t.Error("expected to receive error when assigning a server capability to a server without a server capability\n")
 	}
 
-	// Attempt to assign an server capability with invalid server capability
+	// Attempt to assign a server capability with invalid server capability
 	sscInvalidCapability := tc.ServerServerCapability{
 		ServerID:         ssc.ServerID,
 		ServerCapability: util.StrPtr("bogus"),
@@ -89,7 +88,7 @@ func CreateTestServerServerCapabilities(t *testing.T) {
 		t.Error("expected to receive error when assigning a non existent server capability to a server\n")
 	}
 
-	// Attempt to assign an server capability with invalid server capability
+	// Attempt to assign a server capability with invalid server capability
 	sscInvalidID := tc.ServerServerCapability{
 		ServerID:         util.IntPtr(-1),
 		ServerCapability: ssc.ServerCapability,
@@ -97,6 +96,24 @@ func CreateTestServerServerCapabilities(t *testing.T) {
 	_, _, err = TOSession.CreateServerServerCapability(sscInvalidID)
 	if err == nil {
 		t.Error("expected to receive error when assigning a server capability to a non existent server ID\n")
+	}
+
+	// Attempt to assign a server capability to a non MID/EDGE server
+	servers, _, err := TOSession.GetServerByHostName("riak")
+	if err != nil {
+		t.Fatalf("cannot GET Server by hostname: %v - %v\n", *ssc.Server, err)
+	}
+	if len(servers) < 1 {
+		t.Fatal("need at least one server to test invalid server type assignment")
+	}
+
+	sscInvalidType := tc.ServerServerCapability{
+		ServerID:         &servers[0].ID,
+		ServerCapability: ssc.ServerCapability,
+	}
+	_, _, err = TOSession.CreateServerServerCapability(sscInvalidType)
+	if err == nil {
+		t.Error("expected to receive error when assigning a server capability to a server with incorrect type\n")
 	}
 }
 
@@ -155,11 +172,53 @@ func DeleteTestServerServerCapabilities(t *testing.T) {
 		t.Fatal("returned server capabilities assigned to servers was nil\n")
 	}
 
-	// Delete them
+	// Assign servers to DSes that have the capability required
+	// Used to make sure we block server server_capability DELETE in that case
+	dsServers := []tc.DeliveryServiceServer{}
+	for _, ssc := range sscs {
+
+		dsReqCapResp, _, err := TOSession.GetDeliveryServicesRequiredCapabilities(nil, nil, ssc.ServerCapability)
+		if err != nil {
+			t.Fatalf("cannot GET delivery service required capabilities: %v\n", err)
+		}
+		if len(dsReqCapResp) == 0 {
+			t.Fatalf("at least one delivery service needs the capability %v required", *ssc.ServerCapability)
+		}
+		dsReqCap := dsReqCapResp[0]
+
+		// Assign server to ds
+		_, err = TOSession.CreateDeliveryServiceServers(*dsReqCap.DeliveryServiceID, []int{*ssc.ServerID}, false)
+		if err != nil {
+			t.Fatalf("cannot CREATE server delivery service assignment: %v\n", err)
+		}
+		dsServers = append(dsServers, tc.DeliveryServiceServer{
+			Server:          ssc.ServerID,
+			DeliveryService: dsReqCap.DeliveryServiceID,
+		})
+	}
+
+	// Delete should fail as their delivery services now require the capabilities
+	for _, ssc := range sscs {
+		_, _, err := TOSession.DeleteServerServerCapability(*ssc.ServerID, *ssc.ServerCapability)
+		if err == nil {
+			t.Fatalf("should have gotten error when using DELETE on the server capability %v from server %v as it is required by associated dses\n", *ssc.ServerCapability, *ssc.Server)
+		}
+	}
+
+	for _, dsServer := range dsServers {
+		_, _, err := TOSession.DeleteDeliveryServiceServer(*dsServer.DeliveryService, *dsServer.Server)
+		if err != nil {
+			t.Fatalf("could not DELETE the server %v from ds %v: %v\n", *dsServer.Server, *dsServer.DeliveryService, err)
+		}
+	}
+
+	// Remove the requirement so we can actually delete them
+
 	for _, ssc := range sscs {
 		_, _, err := TOSession.DeleteServerServerCapability(*ssc.ServerID, *ssc.ServerCapability)
 		if err != nil {
 			t.Errorf("could not DELETE the server capability %v from server %v: %v\n", *ssc.ServerCapability, *ssc.Server, err)
 		}
 	}
+
 }

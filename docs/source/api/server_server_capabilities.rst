@@ -117,6 +117,8 @@ Request Structure
 :serverId:         The server's ID to associate
 :serverCapability: The Server Capability's name to associate
 
+.. note:: The server referenced must have a server type of either EDGE or MID.
+
 .. code-block:: http
 	:caption: Request Example
 
@@ -171,6 +173,8 @@ Response Structure
 ``DELETE``
 ==========
 Disassociate a server from a Server Capability
+
+	.. note:: If the ``serverCapability`` is a required capability on a :term:`Delivery Service` that the server is assigned to the DELETE will be blocked until either the server is unassigned from the :term:`Delivery Service` or the server capability is removed as a required capability from the :term:`Delivery Service`.
 
 :Auth. Required: Yes
 :Roles Required: "admin" or "operations"

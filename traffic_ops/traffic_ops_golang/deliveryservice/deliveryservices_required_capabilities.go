@@ -20,9 +20,12 @@ package deliveryservice
  */
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/apache/trafficcontrol/lib/go-tc"
 	"github.com/apache/trafficcontrol/lib/go-tc/tovalidate"
@@ -31,6 +34,7 @@ import (
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/dbhelpers"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/tenant"
 	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/lib/pq"
 )
 
 const (
@@ -208,7 +212,7 @@ func (rc *RequiredCapability) getCapabilities(tenantIDs []int) ([]tc.DeliverySer
 	for rows.Next() {
 		var result tc.DeliveryServicesRequiredCapability
 		if err := rows.StructScan(&result); err != nil {
-			return nil, nil, errors.New(rc.GetType() + " get scanning: " + err.Error()), http.StatusInternalServerError
+			return nil, nil, fmt.Errorf("%s get scanning: %s", rc.GetType(), err.Error()), http.StatusInternalServerError
 		}
 		results = append(results, result)
 	}
@@ -219,10 +223,10 @@ func (rc *RequiredCapability) getCapabilities(tenantIDs []int) ([]tc.DeliverySer
 // Delete implements the api.CRUDer interface.
 func (rc *RequiredCapability) Delete() (error, error, int) {
 	authorized, err := rc.isTenantAuthorized()
-	if err != nil {
-		return nil, errors.New("checking tenant: " + err.Error()), http.StatusInternalServerError
-	} else if !authorized {
+	if !authorized {
 		return errors.New("not authorized on this tenant"), nil, http.StatusForbidden
+	} else if err != nil {
+		return nil, fmt.Errorf("checking authorization for existing DS ID: %s" + err.Error()), http.StatusInternalServerError
 	}
 
 	return api.GenericDelete(rc)
@@ -231,10 +235,15 @@ func (rc *RequiredCapability) Delete() (error, error, int) {
 // Create implements the api.CRUDer interface.
 func (rc *RequiredCapability) Create() (error, error, int) {
 	authorized, err := rc.isTenantAuthorized()
-	if err != nil {
-		return nil, errors.New("checking tenant: " + err.Error()), http.StatusInternalServerError
-	} else if !authorized {
+	if !authorized {
 		return errors.New("not authorized on this tenant"), nil, http.StatusForbidden
+	} else if err != nil {
+		return nil, fmt.Errorf("checking authorization for existing DS ID: %s" + err.Error()), http.StatusInternalServerError
+	}
+
+	usrErr, sysErr, rCode := rc.ensureDSServerCap()
+	if usrErr != nil || sysErr != nil {
+		return usrErr, sysErr, rCode
 	}
 
 	rows, err := rc.APIInfo().Tx.NamedQuery(rcInsertQuery(), rc)
@@ -247,16 +256,71 @@ func (rc *RequiredCapability) Create() (error, error, int) {
 	for rows.Next() {
 		rowsAffected++
 		if err := rows.StructScan(&rc); err != nil {
-			return nil, errors.New(rc.GetType() + " create scanning: " + err.Error()), http.StatusInternalServerError
+			return nil, fmt.Errorf("%s create scanning: %s", rc.GetType(), err.Error()), http.StatusInternalServerError
 		}
 	}
 	if rowsAffected == 0 {
-		return nil, errors.New(rc.GetType() + " create: no " + rc.GetType() + " was inserted, no rows was returned"), http.StatusInternalServerError
+		return nil, fmt.Errorf("%s create: no %s was inserted, no rows was returned", rc.GetType(), rc.GetType()), http.StatusInternalServerError
 	} else if rowsAffected > 1 {
-		return nil, errors.New("too many rows returned from " + rc.GetType() + " insert"), http.StatusInternalServerError
+		return nil, fmt.Errorf("too many rows returned from %s insert", rc.GetType()), http.StatusInternalServerError
 	}
 
 	return nil, nil, http.StatusOK
+}
+
+func (rc *RequiredCapability) ensureDSServerCap() (error, error, int) {
+	tx := rc.APIInfo().Tx
+
+	// Get assigned DS server IDs
+	dsServerIDs := []int64{}
+	if err := tx.Tx.QueryRow(`
+	SELECT ARRAY(
+		SELECT ds.server 
+		FROM deliveryservice_server ds
+		JOIN server s ON ds.server = s.id
+		JOIN type t ON s.type = t.id
+		WHERE ds.deliveryservice=$1
+		AND NOT t.name LIKE 'ORG%'
+	)`, rc.DeliveryServiceID).Scan(pq.Array(&dsServerIDs)); err != nil && err != sql.ErrNoRows {
+		return nil, fmt.Errorf("reading delivery service %v servers: %v", *rc.DeliveryServiceID, err), http.StatusInternalServerError
+	}
+
+	if len(dsServerIDs) == 0 { // no attached servers can return success right away
+		return nil, nil, http.StatusOK
+	}
+
+	// Get servers IDs that have the new capability
+	capServerIDs := []int64{}
+	if err := tx.QueryRow(`
+	SELECT ARRAY(
+		SELECT server
+		FROM server_server_capability 
+		WHERE server = ANY($1)
+		AND server_capability=$2
+	)`, pq.Array(dsServerIDs), rc.RequiredCapability).Scan(pq.Array(&capServerIDs)); err != nil && err != sql.ErrNoRows {
+		return nil, fmt.Errorf("reading servers that have server capability %v attached: %v", *rc.RequiredCapability, err), http.StatusInternalServerError
+	}
+
+	vIDs := getViolatingServerIDs(dsServerIDs, capServerIDs)
+	if len(vIDs) > 0 {
+		return fmt.Errorf("capability %v cannot be made required on the delivery service %v as it has the associated servers %v that do not have the capability assigned", *rc.RequiredCapability, *rc.DeliveryServiceID, strings.Join(vIDs, ",")), nil, http.StatusBadRequest
+	}
+
+	return nil, nil, http.StatusOK
+}
+
+func getViolatingServerIDs(dsServerIDs, capServerIDs []int64) []string {
+	capServerIDsMap := map[int64]struct{}{}
+	for _, id := range capServerIDs {
+		capServerIDsMap[id] = struct{}{}
+	}
+	vIDs := []string{}
+	for _, id := range dsServerIDs {
+		if _, found := capServerIDsMap[id]; !found {
+			vIDs = append(vIDs, strconv.FormatInt(id, 10))
+		}
+	}
+	return vIDs
 }
 
 func (rc *RequiredCapability) isTenantAuthorized() (bool, error) {
@@ -282,11 +346,10 @@ func (rc *RequiredCapability) isTenantAuthorized() (bool, error) {
 
 	if existingID != nil {
 		authorized, err := tenant.IsResourceAuthorizedToUserTx(*existingID, rc.APIInfo().User, rc.APIInfo().Tx.Tx)
-		if err != nil {
-			return false, fmt.Errorf("checking authorization for existing DS ID: %s" + err.Error())
-		}
 		if !authorized {
 			return false, errors.New("not authorized on this tenant")
+		} else if err != nil {
+			return false, fmt.Errorf("checking authorization for existing DS ID: %s" + err.Error())
 		}
 	}
 
