@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-secret-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/secrets"
+#    server: NFS_SERVER_ENDPOINT
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-ops-ca-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/ops-ca"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-vault-schema
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/vault-schema"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cdn-server-content
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/mnt/k8s-cdn/origin-content"
+    server: "143.215.128.212"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cdn-secret
+  namespace: infra
+spec:
+  storageClassName: ""
+  volumeName: cdn-secret-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cdn-ops-ca
+  namespace: infra
+spec:
+  storageClassName: ""
+  volumeName: cdn-ops-ca-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cdn-schemas
+  namespace: infra
+spec:
+  storageClassName: ""
+  volumeName: cdn-vault-schema
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cdn-content
+  namespace: infra
+spec:
+  storageClassName: ""
+  volumeName: cdn-server-content
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi

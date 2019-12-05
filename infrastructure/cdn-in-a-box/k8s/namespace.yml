@@ -1,0 +1,6 @@
+## CDN system namespace = cdn
+## other clients will use namespace default (replace mycdn.ciab.test
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infra

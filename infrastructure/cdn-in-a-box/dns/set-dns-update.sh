@@ -19,7 +19,7 @@
 
 set -eux
 
-domain="ciab.test"
+domain="svc.cluster.local"
 
 shared_dns_dir="/shared/dns"
 
