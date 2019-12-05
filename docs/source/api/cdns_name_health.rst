@@ -21,7 +21,7 @@
 
 ``GET``
 =======
-Retrieves the health of all :term:`Cache Group`\ s for a given CDN.
+Retrieves the health of all :term:`Cache Groups` for a given CDN.
 
 :Auth. Required: Yes
 :Roles Required: None
@@ -45,8 +45,8 @@ Response Structure
 	:offline: The number of OFFLINE caches in the :term:`Cache Group`
 	:online:  The number of ONLINE caches in the :term:`Cache Group`
 
-:totalOffline: Total number of OFFLINE caches across all :term:`Cache Group`\ s which are assigned to the CDN defined by the ``name`` request path parameter
-:totalOnline:  Total number of ONLINE caches across all :term:`Cache Group`\ s which are assigned to the CDN defined by the ``name`` request path parameter
+:totalOffline: Total number of OFFLINE caches across all :term:`Cache Groups` which are assigned to the CDN defined by the ``name`` request path parameter
+:totalOnline:  Total number of ONLINE caches across all :term:`Cache Groups` which are assigned to the CDN defined by the ``name`` request path parameter
 
 .. code-block:: http
 	:caption: Response Example
@@ -60,7 +60,7 @@ Response Structure
 	Content-Type: application/json
 	Date: Wed, 14 Nov 2018 21:14:05 GMT
 	Server: Mojolicious (Perl)
-	Set-Cookie: mojolicious=...; expires=Thu, 15 Nov 2018 01:14:05 GMT; path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Vary: Accept-Encoding
 	Whole-Content-Sha512: KpXViXeAgch58ueQqdyU8NuINBw1EUedE6Rv2ewcLUajJp6kowdbVynpwW7XiSvAyHdtClIOuT3OkhIimghzSA==
 	Content-Length: 115

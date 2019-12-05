@@ -39,7 +39,22 @@ var ErrBadRequest = errors.New("bad request")
 func GetConfigFile(cfg TCCfg) (string, int, error) {
 	pathParts := strings.Split(cfg.TOURL.Path, "/")
 
-	log.Infof("GetConfigFile pathParts %++v\n", pathParts)
+	if len(pathParts) == 7 && pathParts[1] == `api` && pathParts[3] == `servers` && pathParts[5] == `configfiles` && pathParts[6] == `ats` {
+		// "/api/1.x/servers/name/configfiles/ats" is the "meta" config route, which lists all the other configs for this server.
+		server := pathParts[4]
+		log.Infoln("GetConfigFile is meta config request for server '" + server + "'; generating")
+		txt, err := GetConfigFileMeta(cfg, server)
+		if err != nil {
+			if err == ErrNotFound {
+				return "", ExitCodeNotFound, err
+			} else if err == ErrBadRequest {
+				return "", ExitCodeBadRequest, err
+			} else {
+				return "", ExitCodeErrGeneric, err
+			}
+		}
+		return txt, ExitCodeSuccess, nil
+	}
 
 	if len(pathParts) < 8 {
 		log.Infoln("GetConfigFile pathParts < 7, calling TO")
@@ -59,9 +74,42 @@ func GetConfigFile(cfg TCCfg) (string, int, error) {
 	return GetConfigFileFromTrafficOps(cfg)
 }
 
+type ConfigFilePrefixSuffixFunc struct {
+	Prefix string
+	Suffix string
+	Func   func(cfg TCCfg, resource string, fileName string) (string, error)
+}
+
 func GetConfigFileCDN(cfg TCCfg, cdnNameOrID string, fileName string) (string, int, error) {
 	log.Infoln("GetConfigFileCDN cdn '" + cdnNameOrID + "' fileName '" + fileName + "'")
-	return GetConfigFileFromTrafficOps(cfg)
+
+	txt := ""
+	err := error(nil)
+	if getCfgFunc, ok := CDNConfigFileFuncs()[fileName]; ok {
+		txt, err = getCfgFunc(cfg, cdnNameOrID)
+	} else {
+		for _, prefixSuffixFunc := range ConfigFileCDNPrefixSuffixFuncs {
+			if strings.HasPrefix(fileName, prefixSuffixFunc.Prefix) && strings.HasSuffix(fileName, prefixSuffixFunc.Suffix) && len(fileName) > len(prefixSuffixFunc.Prefix)+len(prefixSuffixFunc.Suffix) {
+				txt, err = prefixSuffixFunc.Func(cfg, cdnNameOrID, fileName)
+				break
+			}
+		}
+	}
+
+	if err == nil && txt == "" {
+		err = ErrNotFound
+	}
+
+	if err != nil {
+		code := ExitCodeErrGeneric
+		if err == ErrNotFound {
+			code = ExitCodeNotFound
+		} else if err == ErrBadRequest {
+			code = ExitCodeBadRequest
+		}
+		return "", code, err
+	}
+	return txt, ExitCodeSuccess, nil
 }
 
 func GetConfigFileProfile(cfg TCCfg, profileNameOrID string, fileName string) (string, int, error) {
@@ -100,8 +148,21 @@ func ConfigFileFuncs() map[string]map[string]func(cfg TCCfg, serverNameOrID stri
 	}
 }
 
-func CDNConfigFileFuncs() map[string]func(cfg TCCfg, serverNameOrID string) (string, error) {
-	return map[string]func(cfg TCCfg, serverNameOrID string) (string, error){}
+func CDNConfigFileFuncs() map[string]func(cfg TCCfg, cdnNameOrID string) (string, error) {
+	return map[string]func(cfg TCCfg, cdnNameOrID string) (string, error){
+		"regex_revalidate.config": GetConfigFileCDNRegexRevalidateDotConfig,
+		"bg_fetch.config":         GetConfigFileCDNBGFetchDotConfig,
+		"ssl_multicert.config":    GetConfigFileCDNSSLMultiCertDotConfig,
+		"cacheurl.config":         GetConfigFileCDNCacheURLPlain,
+	}
+}
+
+var ConfigFileCDNPrefixSuffixFuncs = []ConfigFilePrefixSuffixFunc{
+	{"hdr_rw_mid_", ".config", GetConfigFileCDNHeaderRewriteMid},
+	{"hdr_rw_", ".config", GetConfigFileCDNHeaderRewrite},
+	{"cacheurl", ".config", GetConfigFileCDNCacheURL},
+	{"regex_remap_", ".config", GetConfigFileCDNRegexRemap},
+	{"set_dscp_", ".config", GetConfigFileCDNSetDSCP},
 }
 
 func ProfileConfigFileFuncs() map[string]func(cfg TCCfg, serverNameOrID string) (string, error) {
@@ -124,20 +185,29 @@ func ProfileConfigFileFuncs() map[string]func(cfg TCCfg, serverNameOrID string) 
 
 func ServerConfigFileFuncs() map[string]func(cfg TCCfg, serverNameOrID string) (string, error) {
 	return map[string]func(cfg TCCfg, serverNameOrID string) (string, error){
-		"parent.config": GetConfigFileServerParentDotConfig,
+		"parent.config":   GetConfigFileServerParentDotConfig,
+		"remap.config":    GetConfigFileServerRemapDotConfig,
+		"cache.config":    GetConfigFileServerCacheDotConfig,
+		"ip_allow.config": GetConfigFileServerIPAllowDotConfig,
+		"hosting.config":  GetConfigFileServerHostingDotConfig,
+		"packages":        GetConfigFileServerPackages,
+		"chkconfig":       GetConfigFileServerChkconfig,
 	}
 }
 
 func GetConfigFileServer(cfg TCCfg, serverNameOrID string, fileName string) (string, int, error) {
 	log.Infoln("GetConfigFileServer server '" + serverNameOrID + "' fileName '" + fileName + "'")
+	txt := ""
+	err := error(nil)
 	if getCfgFunc, ok := ServerConfigFileFuncs()[fileName]; ok {
-		txt, err := getCfgFunc(cfg, serverNameOrID)
-		if err != nil {
-			return "", ExitCodeErrGeneric, err
-		}
-		return txt, ExitCodeSuccess, nil
+		txt, err = getCfgFunc(cfg, serverNameOrID)
+	} else {
+		txt, err = GetConfigFileServerUnknownConfig(cfg, serverNameOrID, fileName)
 	}
-	return GetConfigFileFromTrafficOps(cfg)
+	if err != nil {
+		return "", ExitCodeErrGeneric, err
+	}
+	return txt, ExitCodeSuccess, nil
 }
 
 func GetConfigFileFromTrafficOps(cfg TCCfg) (string, int, error) {

@@ -32,6 +32,9 @@ func TestLoginFail(t *testing.T) {
 		PostTestLoginFail(t)
 		LoginWithEmptyCredentialsTest(t)
 	})
+	WithObjs(t, []TCObj{Roles, Tenants, Users}, func() {
+		LoginWithTokenTest(t)
+	})
 }
 
 func PostTestLoginFail(t *testing.T) {
@@ -40,23 +43,23 @@ func PostTestLoginFail(t *testing.T) {
 	userAgent := "to-api-v14-client-tests-loginfailtest"
 	uninitializedTOClient, err := getUninitializedTOClient(Config.TrafficOps.Users.Admin, Config.TrafficOps.UserPassword, Config.TrafficOps.URL, userAgent, time.Second*time.Duration(Config.Default.Session.TimeoutInSecs))
 	if err != nil {
-		t.Fatalf("getting uninitialized client: %+v\n", err)
+		t.Fatalf("getting uninitialized client: %+v", err)
 	}
 
 	if len(testData.CDNs) < 1 {
-		t.Fatalf("cannot test login: must have at least 1 test data cdn\n")
+		t.Fatal("cannot test login: must have at least 1 test data cdn")
 	}
 	expectedCDN := testData.CDNs[0]
 	actualCDNs, _, err := uninitializedTOClient.GetCDNByName(expectedCDN.Name)
 	if err != nil {
-		t.Fatalf("GetCDNByName err expected nil, actual '%+v'\n", err)
+		t.Fatalf("GetCDNByName err expected nil, actual '%+v'", err)
 	}
 	if len(actualCDNs) < 1 {
-		t.Fatalf("uninitialized client should have retried login (possibly login failed with a 200, so it didn't try again, and the CDN request returned an auth failure with a 200, which the client reasonably thought was success, and deserialized with no matching keys, resulting in an empty object); len(actualCDNs) expected >1, actual 0")
+		t.Fatal("uninitialized client should have retried login (possibly login failed with a 200, so it didn't try again, and the CDN request returned an auth failure with a 200, which the client reasonably thought was success, and deserialized with no matching keys, resulting in an empty object); len(actualCDNs) expected >1, actual 0")
 	}
 	actualCDN := actualCDNs[0]
 	if expectedCDN.Name != actualCDN.Name {
-		t.Fatalf("cdn.Name expected '%+v' actual '%+v'\n", expectedCDN.Name, actualCDN.Name)
+		t.Fatalf("cdn.Name expected '%+v' actual '%+v'", expectedCDN.Name, actualCDN.Name)
 	}
 }
 
@@ -64,7 +67,46 @@ func LoginWithEmptyCredentialsTest(t *testing.T) {
 	userAgent := "to-api-v14-client-tests-loginfailtest"
 	_, _, err := toclient.LoginWithAgent(Config.TrafficOps.URL, Config.TrafficOps.Users.Admin, "", true, userAgent, false, time.Second*time.Duration(Config.Default.Session.TimeoutInSecs))
 	if err == nil {
-		t.Fatalf("expected error when logging in with empty credentials, actual nil")
+		t.Fatal("expected error when logging in with empty credentials, actual nil")
+	}
+}
+
+func LoginWithTokenTest(t *testing.T) {
+	db, err := OpenConnection()
+	if err != nil {
+		t.Fatalf("Failed to get database connection: %v", err)
+	}
+
+	allowedToken := "test"
+	disallowedToken := "quest"
+
+	if _, err = db.Exec(`UPDATE tm_user SET token=$1 WHERE id = (SELECT id FROM tm_user WHERE role != (SELECT id FROM role WHERE name='disallowed') LIMIT 1)`, allowedToken); err != nil {
+		t.Fatalf("Failed to set allowed token: %v", err)
+	}
+
+	if _, err = db.Exec(`UPDATE tm_user SET token=$1 WHERE id = (SELECT id FROM tm_user WHERE role = (SELECT id FROM role WHERE name='disallowed') LIMIT 1)`, disallowedToken); err != nil {
+		t.Fatalf("Failed to set disallowed token: %v", err)
+	}
+
+	userAgent := "to-api-v14-client-tests-loginfailtest"
+	s, _, err := toclient.LoginWithToken(Config.TrafficOps.URL, allowedToken, true, userAgent, false, time.Second*time.Duration(Config.Default.Session.TimeoutInSecs))
+	if err != nil {
+		t.Errorf("unexpected error when logging in with a token: %v", err)
+	}
+	if s == nil {
+		t.Error("returned client was nil")
+	}
+
+	// disallowed token
+	_, _, err = toclient.LoginWithToken(Config.TrafficOps.URL, disallowedToken, true, userAgent, false, time.Second*time.Duration(Config.Default.Session.TimeoutInSecs))
+	if err == nil {
+		t.Error("expected an error when logging in with a disallowed token, actual nil")
+	}
+
+	// nonexistent token
+	_, _, err = toclient.LoginWithToken(Config.TrafficOps.URL, "notarealtoken", true, userAgent, false, time.Second*time.Duration(Config.Default.Session.TimeoutInSecs))
+	if err == nil {
+		t.Error("expected an error when logging in with a nonexistent token, actual nil")
 	}
 }
 

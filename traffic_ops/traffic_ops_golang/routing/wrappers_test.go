@@ -166,7 +166,7 @@ func TestWrapAuth(t *testing.T) {
 
 	authBase := AuthBase{secret, nil}
 
-	cookie := tocookie.New(userName, time.Now().Add(time.Minute), secret)
+	cookie := tocookie.GetCookie(userName, time.Minute, secret)
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -196,7 +196,7 @@ func TestWrapAuth(t *testing.T) {
 		t.Error("Error creating new request")
 	}
 
-	r.Header.Add("Cookie", tocookie.Name+"="+cookie)
+	r.Header.Add("Cookie", tocookie.Name+"="+cookie.Value)
 
 	expected := auth.CurrentUser{UserName: userName, ID: id, PrivLevel: 30, TenantID: 1}
 
@@ -222,7 +222,7 @@ func TestWrapAuth(t *testing.T) {
 
 	f(w, r)
 
-	expectedError := `{"alerts":[{"text":"Unauthorized, please log in.","level":"error"}]}`
+	expectedError := `{"alerts":[{"text":"Unauthorized, please log in.","level":"error"}]}` + "\n"
 
 	if *debugLogging {
 		fmt.Printf("received: %s\n expected: %s\n", w.Body.Bytes(), expectedError)

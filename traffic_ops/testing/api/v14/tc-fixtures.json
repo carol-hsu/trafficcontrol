@@ -20,6 +20,13 @@
         {
             "latitude": 0,
             "longitude": 0,
+            "name": "multiOriginCachegroup",
+            "shortName": "mog1",
+            "typeName": "ORG_LOC"
+        },
+        {
+            "latitude": 0,
+            "longitude": 0,
             "name": "parentCachegroup",
             "shortName": "pg1",
             "typeName": "MID_LOC"
@@ -91,8 +98,8 @@
             "latitude": 24.1234,
             "longitude": -121.1234,
             "name": "cachegroup2",
-            "parentCachegroupName": "parentCachegroup",
-            "secondaryParentCachegroupName": "secondaryCachegroup",
+            "parentCachegroupName": "secondaryCachegroup",
+            "secondaryParentCachegroupName": "parentCachegroup",
             "shortName": "cg2",
             "typeName": "EDGE_LOC",
             "fallbacks": [
@@ -100,6 +107,15 @@
                 "fallback2",
                 "fallback3"
             ]
+        },
+        {
+            "latitude": 0,
+            "longitude": 0,
+            "name": "cachegroup3",
+            "parentCachegroupName": "parentCachegroup",
+            "secondaryParentCachegroupName": "secondaryCachegroup",
+            "shortName": "cg3",
+            "typeName": "EDGE_LOC"
         }
     ],
     "cdns": [
@@ -233,7 +249,6 @@
             "cdnName": "cdn1",
             "cacheurl": "cacheUrl1",
             "ccrDnsTtl": 3600,
-            "cdnName": "cdn1",
             "checkPath": "",
             "consistentHashQueryParams": [],
             "deepCachingType": "NEVER",
@@ -301,7 +316,6 @@
             "cdnName": "cdn1",
             "cacheurl": "cacheUrl2",
             "ccrDnsTtl": 3600,
-            "cdnName": "cdn1",
             "checkPath": "",
             "consistentHashQueryParams": ["fmt", "limit", "somethingelse"],
             "deepCachingType": "NEVER",
@@ -370,7 +384,6 @@
             "cdnName": "cdn1",
             "cacheurl": "cacheUrl3",
             "ccrDnsTtl": 3600,
-            "cdnName": "cdn1",
             "checkPath": "",
             "consistentHashQueryParams": null,
             "deepCachingType": "NEVER",
@@ -481,7 +494,7 @@
             "rangeRequestHandling": 0,
             "regexRemap": "",
             "regionalGeoBlocking": false,
-            "remapText": "some raw remap text",
+            "remapText": "map some raw remap text",
             "routingName": "",
             "signed": false,
             "signingAlgorithm": "url_sig",
@@ -497,7 +510,6 @@
             "cdnName": "cdn1",
             "cacheurl": "cacheUrl1",
             "ccrDnsTtl": 3600,
-            "cdnName": "cdn1",
             "checkPath": "",
             "consistentHashQueryParams": ["a", "b", "c"],
             "consistentHashRegex": "foo",
@@ -551,6 +563,87 @@
             "type": "HTTP_LIVE",
             "xmlId": "ds-test-minor-versions",
             "anonymousBlockingEnabled": true
+        },
+        {
+            "active": true,
+            "cdnName": "cdn1",
+            "cacheurl": "cacheUrl1",
+            "ccrDnsTtl": 3600,
+            "checkPath": "",
+            "consistentHashQueryParams": [],
+            "deepCachingType": "NEVER",
+            "displayName": "ds1DisplayName",
+            "dnsBypassCname": null,
+            "dnsBypassIp": "",
+            "dnsBypassIp6": "",
+            "dnsBypassTtl": 30,
+            "dscp": 40,
+            "edgeHeaderRewrite": "edgeHeader1",
+            "exampleURLs": [
+                "http://ccr.msods1.example.net",
+                "https://ccr.msods1.example.net"
+            ],
+            "fqPacingRate": 0,
+            "geoLimit": 0,
+            "geoLimitCountries": "",
+            "geoLimitRedirectURL": null,
+            "geoProvider": 0,
+            "globalMaxMbps": 0,
+            "globalMaxTps": 0,
+            "httpBypassFqdn": "",
+            "infoUrl": "TBD",
+            "initialDispersion": 1,
+            "ipv6RoutingEnabled": true,
+            "lastUpdated": "2018-04-06 16:48:51+00",
+            "logsEnabled": false,
+            "longDesc": "mso DS 1",
+            "longDesc1": "msods1",
+            "longDesc2": "msods1",
+            "matchList": [
+                {
+                    "pattern": ".*\\.msods1\\..*",
+                    "setNumber": 0,
+                    "type": "HOST_REGEXP"
+                }
+            ],
+            "maxDnsAnswers": 0,
+            "midHeaderRewrite": "midHeader1",
+            "missLat": 41.881944,
+            "missLong": -87.627778,
+            "multiSiteOrigin": true,
+            "orgServerFqdn": "http://origin.example.net",
+            "originShield": null,
+            "profileDescription": null,
+            "profileName": null,
+            "protocol": 2,
+            "qstringIgnore": 1,
+            "rangeRequestHandling": 0,
+            "regexRemap": "rr1",
+            "regionalGeoBlocking": false,
+            "remapText": "@plugin=tslua.so @pparam=/opt/trafficserver/etc/trafficserver/remapPlugin1.lua",
+            "routingName": "ccr-msods1",
+            "signed": false,
+            "signingAlgorithm": "url_sig",
+            "sslKeyVersion": 2,
+            "tenant": "tenant1",
+            "tenantName": "tenant1",
+            "type": "HTTP_LIVE",
+            "xmlId": "msods1",
+            "anonymousBlockingEnabled": true
+        }
+    ],
+    "deliveryservicesRequiredCapabilities": [
+        {
+            "xmlID": "ds1",
+            "RequiredCapability": "foo"
+        },
+        {
+            "xmlID": "ds2",
+            "RequiredCapability": "bar"
+        },
+        {
+            "xmlID": "msods1",
+            "RequiredCapability": "bar"
         }
     ],
     "divisions": [
@@ -571,6 +664,28 @@
             "cname": "booya.com.",
             "ttl": 34,
             "description": "fooya"
+        }
+    ],
+    "federation_resolvers": [
+        {
+            "ipAddress": "1.2.3.4",
+            "type": "RESOLVE4",
+            "id": 1
+        },
+        {
+            "ipAddress": "0.0.0.0/12",
+            "type": "RESOLVE4",
+            "id": 2
+        },
+        {
+            "ipAddress": "dead::babe",
+            "type": "RESOLVE6",
+            "id": 3
+        },
+        {
+            "ipAddress": "::f1d0:f00d/123",
+            "type": "RESOLVE6",
+            "id": 4
         }
     ],
     "coordinates": [
@@ -796,7 +911,7 @@
             "routingDisabled": false,
             "type": "ATS_PROFILE",
             "params": [
-                 {
+                {
                     "configFile": "records.config",
                     "name": "CONFIG proxy.config.proxy_name",
                     "secure": false,
@@ -1170,10 +1285,25 @@
             "type": "ATS_PROFILE"
         },
         {
+            "cdnName": "cdn2",
+            "description": "edge2 description",
+            "lastUpdated": "2018-03-02T17:27:11.818418+00:00",
+            "name": "EDGEInCDN2",
+            "routing_disabled": false,
+            "type": "ATS_PROFILE"
+        },
+        {
             "cdnName": "cdn4",
             "description": "edge2 description",
             "lastUpdated": "2018-03-02T17:27:11.818418+00:00",
             "name": "EDGE2",
+            "routing_disabled": false,
+            "type": "ATS_PROFILE"
+        },
+        {
+            "cdnName": "cdn2",
+            "description": "cdn2 edge description",
+            "name": "CDN2_EDGE",
             "routing_disabled": false,
             "type": "ATS_PROFILE"
         },
@@ -1216,6 +1346,14 @@
             "name": "RASCAL1",
             "routing_disabled": false,
             "type": "TM_PROFILE"
+        },
+        {
+            "cdnName": "cdn1",
+            "description": "mso origin description",
+            "lastUpdated": "2018-03-02T17:27:11.80173+00:00",
+            "name": "MSO",
+            "routing_disabled": false,
+            "type": "ORG_PROFILE"
         }
     ],
     "regions": [
@@ -1284,9 +1422,46 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-edge-01\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
+        },
+        {
+            "cachegroup": "cachegroup1",
+            "cdnName": "cdn2",
+            "domainName": "ga.atlanta.kabletown.net",
+            "guid": null,
+            "hostName": "cdn2-test-edge",
+            "httpsPort": 443,
+            "iloIpAddress": "",
+            "iloIpGateway": "",
+            "iloIpNetmask": "",
+            "iloPassword": "",
+            "iloUsername": "",
+            "interfaceMtu": 1500,
+            "interfaceName": "eth0",
+            "ip6Address": "",
+            "ip6Gateway": "",
+            "ipAddress": "0.0.0.0",
+            "ipGateway": "0.0.0.0",
+            "ipNetmask": "0.0.0.0",
+            "lastUpdated": "2018-03-28T17:30:00.220351+00:00",
+            "mgmtIpAddress": "",
+            "mgmtIpGateway": "",
+            "mgmtIpNetmask": "",
+            "offlineReason": null,
+            "physLocation": "Denver",
+            "profile": "EDGEInCDN2",
+            "rack": "",
+            "revalPending": false,
+            "routerHostName": "",
+            "routerPortName": "",
+            "status": "REPORTED",
+            "tcpPort": 80,
+            "type": "EDGE",
+            "updPending": false,
+            "xmppId": "",
+            "xmppPasswd": ""
         },
         {
             "cachegroup": "cachegroup1",
@@ -1321,7 +1496,7 @@
             "status": "REPORTED",
             "tcpPort": 8086,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "",
             "xmppPasswd": ""
         },
@@ -1358,12 +1533,12 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-router-01\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
         {
-            "cachegroup": "cachegroup1",
+            "cachegroup": "cachegroup2",
             "cdnName": "cdn1",
             "domainName": "ga.atlanta.kabletown.net",
             "guid": null,
@@ -1395,7 +1570,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-edge-03\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1432,7 +1607,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-edge-14\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1469,12 +1644,12 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-edge-15\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
         {
-            "cachegroup": "cachegroup1",
+            "cachegroup": "parentCachegroup",
             "cdnName": "cdn1",
             "domainName": "ga.atlanta.kabletown.net",
             "guid": null,
@@ -1506,7 +1681,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "MID",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-mid-16\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1543,7 +1718,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-org-1\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1580,7 +1755,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "EDGE",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-org-1\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1617,7 +1792,7 @@
             "status": "REPORTED",
             "tcpPort": 80,
             "type": "MID",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "atlanta-mid-01\\\\@ocdn.kabletown.net",
             "xmppPasswd": "X"
         },
@@ -1654,7 +1829,43 @@
             "status": "REPORTED",
             "tcpPort": 81,
             "type": "TRAFFIC_MONITOR",
-            "updPending": true,
+            "updPending": false,
+            "xmppId": "",
+            "xmppPasswd": "X"
+        },
+        {
+            "cachegroup": "cachegroup2",
+            "cdnName": "cdn2",
+            "domainName": "kabletown2.net",
+            "guid": null,
+            "hostName": "edge1-cdn2",
+            "httpsPort": 443,
+            "iloIpAddress": "",
+            "iloIpGateway": "",
+            "iloIpNetmask": "",
+            "iloPassword": "",
+            "iloUsername": "",
+            "interfaceMtu": 9000,
+            "interfaceName": "bond0",
+            "ip6Address": "2345:1234:12:b::13/64",
+            "ip6Gateway": "2345:1234:12:b::13",
+            "ipAddress": "127.0.0.31",
+            "ipGateway": "127.0.0.4",
+            "ipNetmask": "255.255.255.0",
+            "mgmtIpAddress": "",
+            "mgmtIpGateway": "",
+            "mgmtIpNetmask": "",
+            "offlineReason": null,
+            "physLocation": "Denver",
+            "profile": "CDN2_EDGE",
+            "rack": "RR 119.02",
+            "revalPending": false,
+            "routerHostName": "",
+            "routerPortName": "",
+            "status": "REPORTED",
+            "tcpPort": 81,
+            "type": "EDGE",
+            "updPending": false,
             "xmppId": "",
             "xmppPasswd": "X"
         },
@@ -1691,9 +1902,136 @@
             "status": "REPORTED",
             "tcpPort": 8088,
             "type": "RIAK",
-            "updPending": true,
+            "updPending": false,
             "xmppId": "",
             "xmppPasswd": ""
+        },
+        {
+            "cachegroup": "multiOriginCachegroup",
+            "cdnName": "cdn1",
+            "domainName": "ga.denver.kabletown.net",
+            "guid": null,
+            "hostName": "denver-mso-org-01",
+            "httpsPort": 443,
+            "iloIpAddress": "",
+            "iloIpGateway": "",
+            "iloIpNetmask": "",
+            "iloPassword": "",
+            "iloUsername": "",
+            "interfaceMtu": 9000,
+            "interfaceName": "bond0",
+            "ip6Address": "2345:1234:12:8::20/64",
+            "ip6Gateway": "2345:1234:12:8::20",
+            "ipAddress": "127.0.0.1",
+            "ipGateway": "127.0.0.1",
+            "ipNetmask": "255.255.255.252",
+            "lastUpdated": "2018-03-28T17:30:00.220351+00:00",
+            "mgmtIpAddress": "",
+            "mgmtIpGateway": "",
+            "mgmtIpNetmask": "",
+            "offlineReason": null,
+            "physLocation": "Denver",
+            "profile": "MSO",
+            "rack": "RR 119.02",
+            "revalPending": false,
+            "routerHostName": "",
+            "routerPortName": "",
+            "status": "REPORTED",
+            "tcpPort": 80,
+            "type": "ORG",
+            "updPending": false,
+            "xmppId": "denver-mso-org-01\\\\@ocdn.kabletown.net",
+            "xmppPasswd": "X"
+        },
+        {
+            "cachegroup": "cachegroup3",
+            "cdnName": "cdn1",
+            "domainName": "kabletown2.net",
+            "guid": null,
+            "hostName": "edge1-cdn1-cg3",
+            "httpsPort": 443,
+            "iloIpAddress": "",
+            "iloIpGateway": "",
+            "iloIpNetmask": "",
+            "iloPassword": "",
+            "iloUsername": "",
+            "interfaceMtu": 9000,
+            "interfaceName": "bond0",
+            "ip6Address": "::13/64",
+            "ip6Gateway": "2345:1234:12:b::13",
+            "ipAddress": "127.0.0.100",
+            "ipGateway": "127.0.0.4",
+            "ipNetmask": "255.255.255.0",
+            "mgmtIpAddress": "",
+            "mgmtIpGateway": "",
+            "mgmtIpNetmask": "",
+            "offlineReason": null,
+            "physLocation": "Denver",
+            "profile": "EDGE1",
+            "rack": "RR 119.02",
+            "revalPending": false,
+            "routerHostName": "",
+            "routerPortName": "",
+            "status": "REPORTED",
+            "tcpPort": 81,
+            "type": "EDGE",
+            "updPending": false,
+            "xmppId": "",
+            "xmppPasswd": "X"
+        },
+        {
+            "cachegroup": "cachegroup3",
+            "cdnName": "cdn1",
+            "domainName": "kabletown2.net",
+            "guid": null,
+            "hostName": "edge2-cdn1-cg3",
+            "httpsPort": 443,
+            "iloIpAddress": "",
+            "iloIpGateway": "",
+            "iloIpNetmask": "",
+            "iloPassword": "",
+            "iloUsername": "",
+            "interfaceMtu": 9000,
+            "interfaceName": "bond0",
+            "ip6Address": "::14/64",
+            "ip6Gateway": "2345:1234:12:b::13",
+            "ipAddress": "127.0.0.101",
+            "ipGateway": "127.0.0.4",
+            "ipNetmask": "255.255.255.0",
+            "mgmtIpAddress": "",
+            "mgmtIpGateway": "",
+            "mgmtIpNetmask": "",
+            "offlineReason": null,
+            "physLocation": "Denver",
+            "profile": "EDGE1",
+            "rack": "RR 119.02",
+            "revalPending": false,
+            "routerHostName": "",
+            "routerPortName": "",
+            "status": "REPORTED",
+            "tcpPort": 81,
+            "type": "EDGE",
+            "updPending": false,
+            "xmppId": "",
+            "xmppPasswd": "X"
+        }
+    ],
+    "serverCapabilities": [
+        {
+            "name": "foo"
+        },
+        {
+            "name": "bar"
+        }
+    ],
+    "serverServerCapabilities": [
+        {
+            "serverHostName": "atlanta-org-1",
+            "serverCapability": "foo"
+        },
+        {
+            "serverHostName": "atlanta-org-2",
+            "serverCapability": "bar"
         }
     ],
     "staticdnsentries": [
@@ -1986,6 +2324,7 @@
             "role": 4,
             "stateOrProvince": "LA",
             "tenant": "root",
+            "token": "test",
             "uid": 0,
             "username": "adminuser"
         },
@@ -2008,6 +2347,7 @@
             "role": 1,
             "stateOrProvince": "",
             "tenant": "tenant1",
+            "token": "quest",
             "uid": 0,
             "username": "disalloweduser"
         },
@@ -2133,7 +2473,7 @@
             "dsName": "ds1",
             "request": {
                 "startTime": "2019-01-01 00:00:00",
-                "ttl": 2160,
+                "ttl": 80,
                 "regex": "/foo"
             }
         },
@@ -2141,9 +2481,57 @@
             "dsName": "ds1",
             "request": {
                 "startTime": "2019-01-01 00:00:00",
-                "ttl": 2160,
+                "ttl": 80,
                 "regex": "/foo"
             }
+        }
+    ],
+    "to_extensions": [
+        {
+            "name": "ILO_PING",
+            "version": "1.0.0",
+            "info_url": "-",
+            "script_file": "ToPingCheck.pl",
+            "isactive": 1,
+            "description": "",
+            "servercheck_short_name": "ILO",
+            "type": "CHECK_EXTENSION_BOOL"
+        },
+        {
+            "name": "ORT_ERROR_COUNT",
+            "version": "1.0.0",
+            "info_url": "-",
+            "script_file": "ToORTCheck.pl",
+            "isactive": 1,
+            "description": "",
+            "servercheck_short_name": "ORT",
+            "type": "CHECK_EXTENSION_NUM"
+        }
+    ],
+    "serverchecks": [
+        {
+            "servercheck_short_name": "ILO",
+            "host_name": "atlanta-edge-01",
+            "value": 1
+        },
+        {
+            "servercheck_short_name": "ORT",
+            "host_name": "atlanta-edge-01",
+            "value": 13
+        }
+    ],
+    "invalidationJobs": [
+        {
+            "deliveryService": "ds1",
+            "regex": "/.*",
+            "startTime": 4117118271000,
+            "ttl": "121m"
+        },
+        {
+            "deliveryService":  "ds2",
+            "regex": "\\/some-path?.+\\.jpg",
+            "startTime": "2100-06-19T13:57:51-06:00",
+            "ttl": 2.1
         }
     ]
 }

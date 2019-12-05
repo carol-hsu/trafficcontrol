@@ -49,14 +49,14 @@ Response Structure
 ------------------
 :profile:     The exported :term:`Profile`
 
-	:cdnName:     The name of the :ref:`profile-cdn` to which this :term:`Profile` belongs
+	:cdn:         The name of the :ref:`profile-cdn` to which this :term:`Profile` belongs
 	:description: The :term:`Profile`'s :ref:`profile-description`
 	:name:        The :term:`Profile`'s :ref:`profile-name`
 	:type:        The :term:`Profile`'s :ref:`profile-type`
 
 :parameters:  An array of :term:`Parameters` in use by this :term:`Profile`
 
-	:configFile:  The :term:`Parameter`'s :ref:`parameter-config-file`
+	:config_file: The :term:`Parameter`'s :ref:`parameter-config-file`
 	:name:        :ref:`parameter-name` of the :term:`Parameter`
 	:value:       The :term:`Parameter`'s :ref:`parameter-value`
 
@@ -70,7 +70,7 @@ Response Structure
 	Access-Control-Allow-Origin: *
 	Content-Disposition: attachment; filename="GLOBAL.json"
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: mzP7DVxFAGhICxqagwDyBDRea7oBZPMAx7NCDeOBVCRqlcCFFe7XL3JP58b80aaVOW/2ZGfg/jpYF70cdDfzQA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Fri, 13 Sep 2019 20:14:42 GMT

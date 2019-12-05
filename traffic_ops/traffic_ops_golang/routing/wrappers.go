@@ -142,7 +142,7 @@ func wrapAccessLog(secret string, h http.Handler) http.HandlerFunc {
 		}
 		start := time.Now()
 		defer func() {
-			log.EventfRaw(`%s - %s [%s] "%v %v HTTP/1.1" %v %v %v "%v"`, r.RemoteAddr, user, time.Now().Format(AccessLogTimeFormat), r.Method, r.URL.Path, iw.code, iw.byteCount, int(time.Now().Sub(start)/time.Millisecond), r.UserAgent())
+			log.EventfRaw(`%s - %s [%s] "%v %v?%v %s" %v %v %v "%v"`, r.RemoteAddr, user, time.Now().Format(AccessLogTimeFormat), r.Method, r.URL.Path, r.URL.RawQuery, r.Proto, iw.code, iw.byteCount, int(time.Now().Sub(start)/time.Millisecond), r.UserAgent())
 		}()
 		h.ServeHTTP(iw, r)
 	}
@@ -283,5 +283,13 @@ func NotImplementedHandler() http.Handler {
 		w.Header().Set(tc.ContentType, tc.ApplicationJson)
 		w.WriteHeader(http.StatusNotImplemented)
 		w.Write([]byte(`{"alerts":[{"level":"error","text":"The requested api version is not implemented by this server. If you are using a newer client with an older server, you will need to use an older client version or upgrade your server."}]}`))
+	})
+}
+
+func DisabledRouteHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(tc.ContentType, tc.ApplicationJson)
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte(`{"alerts":[{"level":"error","text":"The requested route is currently disabled."}]}` + "\n"))
 	})
 }

@@ -66,7 +66,7 @@ Response Structure
 	Content-Type: application/json
 	Date: Thu, 15 Nov 2018 14:54:17 GMT
 	Server: Mojolicious (Perl)
-	Set-Cookie: mojolicious=...; expires=Thu, 15 Nov 2018 18:54:17 GMT; path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Vary: Accept-Encoding
 	Whole-Content-Sha512: 6dswLNVRAYBxXAQjXu8MfnLpQ94b9HyrL7ROzhF2pw+tBotgU98zhQRQoQrPEwrTVranTxTUyxP2icFfv5vh7g==
 	Content-Length: 112
@@ -83,4 +83,4 @@ Response Structure
 
 
 
-.. [1] If a user does not have either the "admin" nor "operations" role, then only :term:`Delivery Service`\ s assigned to the user's Tenant will be able to be queried with this endpoint
+.. [1] If a user does not have either the "admin" nor "operations" role, then only :term:`Delivery Services` assigned to the user's Tenant will be able to be queried with this endpoint

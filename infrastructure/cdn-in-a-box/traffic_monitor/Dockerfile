@@ -44,12 +44,17 @@ ADD traffic_monitor/traffic_monitor.cfg /opt/traffic_monitor/conf/traffic_monito
 
 ADD enroller/server_template.json \
     traffic_ops/to-access.sh \
+    traffic_monitor/run.sh \
     /
 
-COPY dns/insert-self-into-dns.sh /usr/local/sbin
-COPY dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
+ADD dns/set-dns.sh \
+    dns/insert-self-into-dns.sh \
+    /usr/local/sbin/
+
+#COPY dns/insert-self-into-dns.sh /usr/local/sbin
+#COPY dns/set-dns.sh /usr/local/sbin
+#RUN chmod 700 /usr/local/sbin/*.sh
 
 EXPOSE 80
-ADD traffic_monitor/run.sh /
+#ADD traffic_monitor/run.sh /
 ENTRYPOINT /run.sh

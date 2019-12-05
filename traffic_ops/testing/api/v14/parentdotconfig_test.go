@@ -20,8 +20,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/apache/trafficcontrol/lib/go-log"
 )
 
 func TestParentDotConfig(t *testing.T) {
@@ -35,121 +33,122 @@ func TestParentDotConfig(t *testing.T) {
 func GetTestParentDotConfig(t *testing.T) {
 	dsServers, _, err := TOSession.GetDeliveryServiceServers()
 	if err != nil {
-		t.Fatalf("GET delivery service servers: %v\n", err)
-	} else if len(dsServers.Response) == 0 {
-		t.Fatalf("GET delivery service servers: no servers found\n")
-	} else if dsServers.Response[0].Server == nil {
-		t.Fatalf("GET delivery service servers: returned nil server\n")
-	} else if dsServers.Response[0].DeliveryService == nil {
-		t.Fatalf("GET delivery service servers: returned nil ds\n")
+		t.Fatalf("GET delivery service servers: %v", err)
 	}
-	serverID := *dsServers.Response[0].Server
+	if len(dsServers.Response) == 0 {
+		t.Fatal("GET delivery service servers: no servers found")
+	}
 
-	ds, _, err := TOSession.GetDeliveryService(strconv.Itoa(*dsServers.Response[0].DeliveryService))
+	dss := dsServers.Response[0]
+
+	if dss.Server == nil {
+		t.Fatal("GET delivery service servers: returned nil server")
+	}
+	if dss.DeliveryService == nil {
+		t.Fatal("GET delivery service servers: returned nil ds")
+	}
+
+	ds, _, err := TOSession.GetDeliveryService(strconv.Itoa(*dss.DeliveryService))
 	if err != nil {
-		t.Fatalf("Getting ds %+v: "+err.Error()+"\n", *dsServers.Response[0].DeliveryService)
-	} else if ds == nil {
-		t.Fatalf("Getting ds %+v: "+"got nil response"+"\n", *dsServers.Response[0].DeliveryService)
-	} else if ds.OrgServerFQDN == "" {
-		t.Fatalf("Getting ds %+v: "+"got empty ds.OrgServerFQDN"+"\n", *dsServers.Response[0].DeliveryService)
+		t.Fatalf("Getting ds %+v: %v", *dss.DeliveryService, err)
+	}
+	if ds == nil {
+		t.Fatalf("Getting ds %+v: got nil response", *dss.DeliveryService)
+	}
+	if ds.OrgServerFQDN == "" {
+		t.Fatalf("Getting ds %+v: got empty ds.OrgServerFQDN", *dss.DeliveryService)
 	}
 
 	originURI, err := url.Parse(ds.OrgServerFQDN)
 	if err != nil {
-		t.Fatalf("Getting ds %+v: "+" ds.OrgServerFQDN '%+v' failed to parse as a URL: %+v\n", *dsServers.Response[0].DeliveryService, ds.OrgServerFQDN, err)
+		t.Fatalf("Getting ds %+v: ds.OrgServerFQDN '%v' failed to parse as a URL: %v", *dss.DeliveryService, ds.OrgServerFQDN, err)
 	}
 	originHost := originURI.Hostname()
 
-	parentDotConfig, _, err := TOSession.GetATSServerConfig(serverID, "parent.config")
+	parentDotConfig, _, err := TOSession.GetATSServerConfig(*dss.Server, "parent.config")
 	if err != nil {
-		t.Fatalf("Getting server %+v config parent.config: "+err.Error()+"\n", serverID)
+		t.Fatalf("Getting server %v config parent.config: %v", *dss.Server, err)
 	}
 
 	if !strings.Contains(parentDotConfig, originHost) {
-		t.Errorf("expected: parent.config to contain delivery service origin FQDN '%+v' host '%+v', actual: '''%+v'''", ds.OrgServerFQDN, originHost, parentDotConfig)
+		t.Errorf("expected: parent.config to contain delivery service origin FQDN '%v' host '%v', actual:\n'''\n%+v\n'''", ds.OrgServerFQDN, originHost, parentDotConfig)
 	}
 }
 
 func CreateTestDeliveryServiceServers(t *testing.T) {
-	log.Debugln("DeleteTestDeliveryServiceServers")
-
 	dses, _, err := TOSession.GetDeliveryServices()
 	if err != nil {
-		t.Errorf("cannot GET DeliveryServices: %v\n", err)
+		t.Errorf("cannot GET DeliveryServices: %v", err)
 	}
 	if len(dses) < 1 {
-		t.Errorf("GET DeliveryServices returned no dses, must have at least 1 to test ds-servers")
+		t.Error("GET DeliveryServices returned no dses, must have at least 1 to test ds-servers")
 	}
-	ds := dses[0]
 
 	servers, _, err := TOSession.GetServers()
 	if err != nil {
-		t.Errorf("cannot GET Servers: %v\n", err)
+		t.Errorf("cannot GET Servers: %v", err)
 	}
 	if len(servers) < 1 {
-		t.Errorf("GET Servers returned no dses, must have at least 1 to test ds-servers")
+		t.Error("GET Servers returned no servers, must have at least 1 to test ds-servers")
 	}
-	server := servers[0]
 
-	_, err = TOSession.CreateDeliveryServiceServers(ds.ID, []int{server.ID}, true)
-	if err != nil {
-		t.Errorf("POST delivery service servers: %v\n", err)
+	for _, ds := range dses {
+		serverIDs := make([]int, 0, len(servers))
+		for _, server := range servers {
+			if server.Type == "EDGE" && server.CDNName == ds.CDNName {
+				serverIDs = append(serverIDs, server.ID)
+			}
+		}
+
+		if len(serverIDs) > 0 {
+			_, err = TOSession.CreateDeliveryServiceServers(ds.ID, serverIDs, true)
+			if err != nil {
+				t.Errorf("POST delivery service servers: %v", err)
+			}
+		}
 	}
 }
 
 // DeleteTestDeliveryServiceServersCreated deletes the dss assignments created by CreateTestDeliveryServiceServers.
 func DeleteTestDeliveryServiceServersCreated(t *testing.T) {
-	dses, _, err := TOSession.GetDeliveryServices()
+	// You gotta do this because TOSession.GetDeliveryServiceServers doesn't fetch the complete response.......
+	dssLen := len(testData.Servers) * len(testData.DeliveryServices)
+	dsServers, _, err := TOSession.GetDeliveryServiceServersN(dssLen)
 	if err != nil {
-		t.Errorf("cannot GET DeliveryServices: %v\n", err)
-	}
-	if len(dses) < 1 {
-		t.Errorf("GET DeliveryServices returned no dses, must have at least 1 to test ds-servers")
-	}
-	ds := dses[0]
-
-	servers, _, err := TOSession.GetServers()
-	if err != nil {
-		t.Errorf("cannot GET Servers: %v\n", err)
-	}
-	if len(servers) < 1 {
-		t.Errorf("GET Servers returned no dses, must have at least 1 to test ds-servers")
-	}
-	server := servers[0]
-
-	dsServers, _, err := TOSession.GetDeliveryServiceServers()
-	if err != nil {
-		t.Errorf("GET delivery service servers: %v\n", err)
+		t.Fatalf("GET delivery service servers: %v", err)
 	}
 
-	found := false
 	for _, dss := range dsServers.Response {
-		if *dss.DeliveryService == ds.ID && *dss.Server == server.ID {
-			found = true
-			break
+		if dss.DeliveryService == nil {
+			t.Error("Found ds-to-server assignment with nil Delivery Service")
+			continue
+		}
+		if dss.Server == nil {
+			t.Error("Found ds-to-server assignment with nil Server")
+			continue
+		}
+
+		_, _, err := TOSession.DeleteDeliveryServiceServer(*dss.DeliveryService, *dss.Server)
+		if err != nil {
+			t.Errorf("Failed to remove assignment of server #%d to DS #%d: %v", *dss.Server, *dss.DeliveryService, err)
 		}
 	}
-	if !found {
-		t.Errorf("POST delivery service servers returned success, but ds-server not in GET")
-	}
 
-	if _, _, err := TOSession.DeleteDeliveryServiceServer(ds.ID, server.ID); err != nil {
-		t.Errorf("DELETE delivery service server: %v\n", err)
-	}
-
-	dsServers, _, err = TOSession.GetDeliveryServiceServers()
+	dsServers, _, err = TOSession.GetDeliveryServiceServersN(dssLen)
 	if err != nil {
-		t.Errorf("GET delivery service servers: %v\n", err)
+		t.Fatalf("GET delivery service servers: %v", err)
 	}
 
-	found = false
 	for _, dss := range dsServers.Response {
-		if *dss.DeliveryService == ds.ID && *dss.Server == server.ID {
-			found = true
-			break
+		if dss.DeliveryService == nil {
+			t.Error("Found ds-to-server assignment (after supposed deletion) with nil DeliveryService")
+			continue
 		}
-	}
-	if found {
-		t.Errorf("DELETE delivery service servers returned success, but still in GET")
+		if dss.Server == nil {
+			t.Error("Found ds-to-server assignment (after supposed deletion) with nil Server")
+			continue
+		}
+
+		t.Errorf("Found ds-to-server assignment {DSID: %d, Server: %d} after deletion", *dss.DeliveryService, *dss.Server)
 	}
 }

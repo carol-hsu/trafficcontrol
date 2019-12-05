@@ -21,7 +21,7 @@
 
 ``POST``
 ========
-Assigns a :term:`Cache Group` to one or more :term:`Delivery Service`\ s
+Assigns a :term:`Cache Group` to one or more :term:`Delivery Services`
 
 :Auth. Required: Yes
 :Roles Required: "admin" or "operations"
@@ -37,7 +37,7 @@ Request Structure
 	|  ID  | The integral, unique identifier of the :term:`Cache Group` being assigned |
 	+------+---------------------------------------------------------------------------+
 
-:deliveryServices:  The integral, unique identifiers of the :term:`Delivery Service`\ s to which the :term:`Cache Group` is being assigned
+:deliveryServices:  The integral, unique identifiers of the :term:`Delivery Services` to which the :term:`Cache Group` is being assigned
 
 .. code-block:: http
 	:caption: Request Example
@@ -54,7 +54,7 @@ Request Structure
 
 Response Structure
 ------------------
-:deliveryServices: An array of *all* :term:`Delivery Service`\ s to which the :term:`Cache Group` is assigned (**not** just the one(s) to which it was assigned via the request)
+:deliveryServices: An array of *all* :term:`Delivery Services` to which the :term:`Cache Group` is assigned (**not** just the one(s) to which it was assigned via the request)
 :id:               The :term:`Cache Group`\ 's ID
 :serverNames:      An array of the (short) hostnames of all servers in the :term:`Cache Group`
 
@@ -67,7 +67,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: j/yH0gvJoaGjiLZU/0MA8o5He20O4aJ5wh1eF9ex6F6IBO1liM9Wk9RkWCw7sdiUHoy13/mf7gDntisZwzP7yw==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 14 Nov 2018 19:54:17 GMT

@@ -67,6 +67,9 @@ Response Structure
 	:coveragezone.polling.interval:      A string containing an integer which specifies the interval, in seconds, on which Traffic Routers should check for a new Coverage Zone file
 	:coveragezone.polling.url:           The URL where a Coverage Zone file may be requested by Traffic Routers
 	:dnssec.dynamic.response.expiration: A string containing a number and unit suffix that specifies the length of time for which dynamic responses to DNSSEC lookup queries should remain valid
+	:dnssec.dynamic.concurrencylevel:    An integer that defines the size of the concurrency level (threads) of the Guava cache used by ZoneManager to store zone material
+	:dnssec.dynamic.initialcapacity:     An integer that defines the initial size of the Guava cache, default is 10000. Too low of a value can lead to expensive resizing
+	:dnssec.init.timeout:                An integer that defines the number of minutes to allow for zone generation, this bounds the zone priming activity
 	:dnssec.enabled:                     A string that tells whether or not the CDN uses DNSSEC; one of:
 
 		"false"
@@ -75,10 +78,6 @@ Response Structure
 			DNSSEC is used within this CDN
 
 	:domain_name:                        The Top-Level Domain Name (TLD) served by the CDN
-	:edge.dns.limit:                     This field is of unknown use, and may be remnants of a legacy system
-	:edge.dns.routing:                   This field is of unknown use, and may be remnants of a legacy system
-	:edge.http.limit:                    This field is of unknown use, and may be remnants of a legacy system
-	:edge.http.routing:                  This field is of unknown use, and may be remnants of a legacy system
 	:federationmapping.polling.interval: A string containing an integer which specifies the interval, in seconds, on which other Traffic Control components should check for new federation mappings
 	:federationmapping.polling.url:      The URL where Traffic Control components can request federation mappings
 	:geolocation.polling.interval:       A string containing an integer which specifies the interval, in seconds, on which other Traffic Control components should check for new IP-to-geographic-location mapping databases
@@ -106,7 +105,7 @@ Response Structure
 	:zonemanager.cache.maintenance.interval: A configuration option for the ZoneManager Java class of Traffic Router
 	:zonemanager.threadpool.scale:           A configuration option for the ZoneManager Java class of Traffic Router
 
-:contentRouters: An object containing keys which are the (short) hostnames of the Traffic Routers that serve requests for :term:`Delivery Service`\ s in this CDN
+:contentRouters: An object containing keys which are the (short) hostnames of the Traffic Routers that serve requests for :term:`Delivery Services` in this CDN
 
 	:api.port:        A string containing the port number on which the :ref:`tr-api` is served by this Traffic Router via HTTP
 	:secure.api.port: A string containing the port number on which the :ref:`tr-api` is served by this Traffic Router via HTTPS (optional)
@@ -121,12 +120,12 @@ Response Structure
 
 		.. seealso:: :ref:`health-proto`
 
-:contentServers: An object containing keys which are the (short) hostnames of the Edge-Tier :term:`cache server` s in the CDN; the values corresponding to those keys are routing information for said servers
+:contentServers: An object containing keys which are the (short) hostnames of the Edge-Tier :term:`cache servers` in the CDN; the values corresponding to those keys are routing information for said servers
 
 	:cacheGroup:       The name of the Cache Group to which the server belongs
-	:deliveryServices: An object containing keys which are the names of :term:`Delivery Service`\ s to which this :term:`cache server` is assigned; the values corresponding to those keys are arrays of FQDNs that resolve to this :term:`cache server`
+	:deliveryServices: An object containing keys which are the names of :term:`Delivery Services` to which this :term:`cache server` is assigned; the values corresponding to those keys are arrays of FQDNs that resolve to this :term:`cache server`
 
-		.. note:: Only Edge-tier :term:`cache server` s can be assigned to a Delivery SErvice, and therefore this field will only be present when ``type`` is ``"EDGE"``.
+		.. note:: Only Edge-tier :term:`cache servers` can be assigned to a Delivery SErvice, and therefore this field will only be present when ``type`` is ``"EDGE"``.
 
 	:fqdn:            The server's Fully Qualified Domain Name (FQDN)
 	:hashCount:       The number of servers to be placed into a single "hash ring" in Traffic Router
@@ -156,7 +155,7 @@ Response Structure
 		MID
 			This is a Mid-tier :term:`cache server`
 
-:deliveryServices: An object containing keys which are the 'xml_id's of all of the :term:`Delivery Service`\ s within the CDN
+:deliveryServices: An object containing keys which are the 'xml_id's of all of the :term:`Delivery Services` within the CDN
 
 	:anonymousBlockingEnabled: A string containing a boolean that tells whether or not Anonymized IP Addresses are blocked by this :term:`Delivery Service`; one of:
 
@@ -349,7 +348,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: 220bc4XXwaj+s7ODd3QAF5leGj06lnApiN5E8H/B2RgxSphnQIfnwy6WWbBDjonWXPV1IWDCjBMO+rR+lAabMg==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 12 Dec 2018 17:36:25 GMT
@@ -365,10 +364,6 @@ Response Structure
 			"dnssec.dynamic.response.expiration": "300s",
 			"dnssec.enabled": "false",
 			"domain_name": "mycdn.ciab.test",
-			"edge.dns.limit": "6",
-			"edge.dns.routing": "true",
-			"edge.http.limit": "6",
-			"edge.http.routing": "true",
 			"federationmapping.polling.interval": "60000",
 			"federationmapping.polling.url": "https://${toHostname}/internal/api/1.3/federations.json",
 			"geolocation.polling.interval": "86400000",

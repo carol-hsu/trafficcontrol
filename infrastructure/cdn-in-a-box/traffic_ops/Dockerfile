@@ -78,7 +78,8 @@ WORKDIR /opt/traffic_ops/app
 ADD traffic_ops/app/cpanfile traffic_ops/install/bin/install_goose.sh ./
 RUN cpanm -l ./local Carton && \
     POSTGRES_HOME=/usr/pgsql-9.6 PERL5LIB=$(pwd)/local/lib/perl5 ./local/bin/carton  && \
-    rm -rf $HOME/.cpan* /tmp/Dockerfile /tmp/local.tar.gz ./cpanfile && ./install_goose.sh
+    rm -rf $HOME/.cpan* /tmp/Dockerfile /tmp/local.tar.gz ./cpanfile
+RUN ./install_goose.sh
 
 # Override TRAFFIC_OPS_RPM arg to use a different one using --build-arg TRAFFIC_OPS_RPM=...  Can be local file or http://...
 ARG TRAFFIC_OPS_RPM=infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
@@ -104,9 +105,12 @@ ADD infrastructure/cdn-in-a-box/enroller/server_template.json \
 
 ADD infrastructure/cdn-in-a-box/traffic_ops_data /traffic_ops_data
 
+<<<<<<< HEAD
 COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
 COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
 RUN chmod 700 /usr/local/sbin/*.sh
 
 RUN chown -R trafops:trafops /opt/traffic_ops
+=======
+>>>>>>> b16719e22f07c54c83339e435a0f948746116d7e
 CMD /run.sh

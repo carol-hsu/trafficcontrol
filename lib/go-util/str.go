@@ -33,3 +33,22 @@ func RemoveStrDuplicates(inputStrings []string, seenStrings map[string]struct{})
 	}
 	return uniqueStrings, seenStrings
 }
+
+// StrInArray returns whether s is one of the strings in strs.
+func StrInArray(strs []string, s string) bool {
+	for _, str := range strs {
+		if str == s {
+			return true
+		}
+	}
+	return false
+}
+
+func ContainsStr(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}

@@ -99,7 +99,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: MaIvaO8OSjysr4bCkuXFEMf3o6mOqga1aM4IHN/tcP2aa1iXEmA5IrHB7DaqNX/2vGHLXvN+01FEAR/lRNqr1w==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 14 Nov 2018 21:28:23 GMT
@@ -151,5 +151,5 @@ Response Structure
 	]}
 
 
-.. [1] Users with the roles "admin" and/or "operations" will be able to the see servers associated with *any* :term:`Delivery Service`\ s, whereas any other user will only be able to see the servers associated with :term:`Delivery Service`\ s their Tenant is allowed to see.
+.. [1] Users with the roles "admin" and/or "operations" will be able to the see servers associated with *any* :term:`Delivery Services`, whereas any other user will only be able to see the servers associated with :term:`Delivery Services` their Tenant is allowed to see.
 .. [2] See `the Wikipedia article on Out-of-Band Management <https://en.wikipedia.org/wiki/Out-of-band_management>`_ for more information.

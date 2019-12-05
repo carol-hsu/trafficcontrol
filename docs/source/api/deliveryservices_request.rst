@@ -31,25 +31,6 @@ Allows a user to submit Delivery Service Requests.
 
 Request Structure
 -----------------
-.. table:: Request Query Parameters
-
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-	| Name      | Required | Description                                                                                                   |
-	+===========+==========+===============================================================================================================+
-	| orderby   | no       | Choose the ordering of the results - must be the name of one of the fields of the objects in the ``response`` |
-	|           |          | array                                                                                                         |
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-	| sortOrder | no       | Changes the order of sorting. Either ascending (default or "asc") or descending ("desc")                      |
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-	| limit     | no       | Choose the maximum number of results to return                                                                |
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-	| offset    | no       | The number of results to skip before beginning to return results. Must use in conjunction with limit          |
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-	| page      | no       | Return the n\ :sup:`th` page of results, where "n" is the value of this parameter, pages are ``limit`` long   |
-	|           |          | and the first page is 1. If ``offset`` was defined, this query parameter has no effect. ``limit`` must be     |
-	|           |          | defined to make use of ``page``.                                                                              |
-	+-----------+----------+---------------------------------------------------------------------------------------------------------------+
-
 :details: An object describing the actual parameters for the Delivery Service request
 
 	:customer:        Name of the customer associated with the :term:`Delivery Service`
@@ -83,19 +64,19 @@ Request Structure
 	:overflowService:                  An optional string containing the IP address or URL of an overflow point (used if rate limits are met or exceeded
 	:peakBPSEstimate:                  A special string describing the estimated peak data transfer rate of the :term:`Delivery Service` in Bytes Per Second (BPS)
 	:peakTPSEstimate:                  A special string describing the estimated peak transaction rate of the :term:`Delivery Service` in Transactions Per Second (TPS)
-	:queryStringHandling:              A special string describing how the :term:`Delivery Service`\ should treat URLs containing query parameters
-	:rangeRequestHandling:             A special string describing how the :term:`Delivery Service`\ should handle range requests
+	:queryStringHandling:              A special string describing how the :term:`Delivery Service` should treat URLs containing query parameters
+	:rangeRequestHandling:             A special string describing how the :term:`Delivery Service` should handle range requests
 	:rateLimitingGBPS:                 An optional field which, if defined, should contain the maximum allowed data transfer rate for the :term:`Delivery Service` in GigaBytes Per Second (GBPS)
 	:rateLimitingTPS:                  An optional field which, if defined, should contain the maximum allowed transaction rate for the :term:`Delivery Service` in Transactions Per Second (TPS)
 	:routingName:                      The routing name for the :term:`Delivery Service`, e.g. ``SomeRoutingName.DeliveryService_xml_id.CDNName.com``
 	:routingType:                      The :term:`Delivery Service`'s routing type, should be one of:
 
 		HTTP
-			The Traffic Router re-directs clients to :term:`cache server`\ s using the HTTP ``302 REDIRECT`` response code
+			The Traffic Router re-directs clients to :term:`cache servers` using the HTTP ``302 REDIRECT`` response code
 		DNS
-			The Traffic Router responds to requests for name resolution of the :term:`Delivery Service`'s routing name with IP addresses of :term:`cache server`\ s
+			The Traffic Router responds to requests for name resolution of the :term:`Delivery Service`'s routing name with IP addresses of :term:`cache servers`
 		STEERING
-			This :term:`Delivery Service` routes clients to other :term:`Delivery Service`\ s - which will in turn (generally) route them to clients
+			This :term:`Delivery Service` routes clients to other :term:`Delivery Services` - which will in turn (generally) route them to clients
 		ANY_MAP
 			Some kind of undocumented black magic is used to get clients to... content, probably?
 
@@ -131,8 +112,8 @@ Request Structure
 		"hasNegativeCachingCustomization": false,
 		"negativeCachingCustomizationNote": "",
 		"serviceAliases": [],
-		"rateLimitingGBPS": 50,
-		"rateLimitingTPS": 5000,
+		"rateLimitingGBPS": "less than 50",
+		"rateLimitingTPS": "no more than 5000",
 		"overflowService": null,
 		"headerRewriteEdge": "",
 		"headerRewriteMid": "",
