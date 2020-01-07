@@ -24,7 +24,7 @@ profiles_dir="${base_data_dir}/profiles"
 
 service_names='db trafficops trafficops-perl trafficportal trafficmonitor trafficvault trafficrouter enroller dns'
 
-service_domain='infra.ciab.test'
+service_domain='infra.svc.cluster.local'
 
 gateway_ip="$(ip route | grep default | cut -d' ' -f3)"
 gateway_ip6="$(ip -6 route | grep default | cut -d' ' -f3)"

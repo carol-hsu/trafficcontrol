@@ -105,12 +105,9 @@ ADD infrastructure/cdn-in-a-box/enroller/server_template.json \
 
 ADD infrastructure/cdn-in-a-box/traffic_ops_data /traffic_ops_data
 
-<<<<<<< HEAD
-COPY infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh /usr/local/sbin
-COPY infrastructure/cdn-in-a-box/dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
+ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
+#    infrastructure/cdn-in-a-box/dns/set-dns.sh \
+    infrastructure/cdn-in-a-box/traffic_ops/set-to-ips-from-dns.sh \ 
+    /usr/local/sbin/
 
-RUN chown -R trafops:trafops /opt/traffic_ops
-=======
->>>>>>> b16719e22f07c54c83339e435a0f948746116d7e
 CMD /run.sh

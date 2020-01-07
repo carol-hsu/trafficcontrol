@@ -43,6 +43,9 @@ spec:
       - name: dns
         image: gabbro:30500/cdn-dns
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.254'
         ports:
         - containerPort: 53
         volumeMounts:
@@ -96,6 +99,9 @@ spec:
       - name: edge-tier
         image: gabbro:30500/cdn-edge-tier
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.100'
         volumeMounts:
           - mountPath: /shared
             name: secret-dir
@@ -146,6 +152,9 @@ spec:
       - name: mid-tier
         image: gabbro:30500/cdn-mid-tier
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.120'
         volumeMounts:
           - mountPath: /shared
             name: secret-dir
@@ -197,6 +206,9 @@ spec:
       - name: stat-db
         image: gabbro:30500/cdn-stat-db
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.11'
         ports:
         - containerPort: 8086
         volumeMounts:
@@ -251,6 +263,9 @@ spec:
       - name: ops-db
         image: gabbro:30500/cdn-ops-db
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.10'
         ports:
         - containerPort: 5432
         volumeMounts:
@@ -304,6 +319,9 @@ spec:
       - name: enroller
         image: gabbro:30500/cdn-enroller
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.200'
         ports:
         - containerPort: 80
         volumeMounts:
@@ -361,6 +379,9 @@ spec:
       - name: vault
         image: gabbro:30500/cdn-vault
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.50'
         ports:
         - containerPort: 8087
         - containerPort: 8098
@@ -405,6 +426,12 @@ spec:
       - name: stats
         image: gabbro:30500/cdn-stats
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          #use pod IP instead
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         volumeMounts:
           - mountPath: /shared
             name: secret-dir
@@ -459,6 +486,9 @@ spec:
       - name: ops-perl
         image: gabbro:30500/cdn-ops-perl
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.21'
         ports:
         - containerPort: 443
         volumeMounts:
@@ -513,6 +543,9 @@ spec:
       - name: ops-go
         image: gabbro:30500/cdn-ops-go
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.20'
         ports:
         - containerPort: 443
         volumeMounts:
@@ -576,6 +609,9 @@ spec:
       - name: router
         image: gabbro:30500/cdn-router
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.60'
         ports:
         - containerPort: 3333
         - containerPort: 3443
@@ -630,6 +666,9 @@ spec:
       - name: router
         image: gabbro:30500/cdn-monitor
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.40'
         ports:
         - containerPort: 80
         volumeMounts:
@@ -731,6 +770,9 @@ spec:
       - name: data-server
         image: gabbro:30500/cdn-server
         imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.140'
         ports:
         - containerPort: 443
         volumeMounts:

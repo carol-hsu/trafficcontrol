@@ -45,6 +45,7 @@ ADD enroller/server_template.json \
 #COPY dns/set-dns.sh /usr/local/sbin
 #RUN chmod 700 /usr/local/sbin/*.sh
 
-ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
+#ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
+ADD dns/insert-self-into-dns.sh /usr/local/sbin/
 
 ENTRYPOINT /run.sh

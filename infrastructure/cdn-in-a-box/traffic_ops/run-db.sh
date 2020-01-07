@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-sh set-dns.sh
-sh insert-self-into-dns.sh
+#sh set-dns.sh
+insert-self-into-dns.sh
 
 exec /docker-entrypoint.sh postgres

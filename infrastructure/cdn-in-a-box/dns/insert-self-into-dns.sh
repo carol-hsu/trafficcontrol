@@ -27,8 +27,10 @@ dns_key_file_name="K${domain}.private"
 my_host="$(hostname -s)"
 my_interface="$(ifconfig | egrep "^\w.+ " | grep -v lo | awk '{print $1}')"
 my_interface=${my_interface%":"}
-my_ip="$(ifconfig $my_interface | grep 'inet ' | awk '{print $2}')" # TODO determine if this should be 'hostname -I'
-my_ip=${my_ip#"addr:"}
+
+#my_ip="$(ifconfig $my_interface | grep 'inet ' | awk '{print $2}')" # TODO determine if this should be 'hostname -I'
+#my_ip=${my_ip#"addr:"}
+my_ip=${MY_SERVICE_IP}
 my_ip6="$(ifconfig $my_interface | egrep 'inet6 .+<global>' | awk '{print $2}')"
 
 full_sub_domain="infra.${domain}"

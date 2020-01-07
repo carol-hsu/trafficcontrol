@@ -13,8 +13,8 @@ docker tag cdn-ops-go $DOCKER_REGISTRY/cdn-ops-go
 docker push $DOCKER_REGISTRY/cdn-ops-go
 docker tag cdn-stats $DOCKER_REGISTRY/cdn-stats
 docker push $DOCKER_REGISTRY/cdn-stats
-docker tag cdn-portal $DOCKER_REGISTRY/cdn-portal
-docker push $DOCKER_REGISTRY/cdn-portal
+#docker tag cdn-portal $DOCKER_REGISTRY/cdn-portal
+#docker push $DOCKER_REGISTRY/cdn-portal
 docker tag cdn-router $DOCKER_REGISTRY/cdn-router
 docker push $DOCKER_REGISTRY/cdn-router
 docker tag cdn-monitor $DOCKER_REGISTRY/cdn-monitor

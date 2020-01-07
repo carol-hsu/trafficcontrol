@@ -3,7 +3,7 @@
     "displayName": "Demo 1",
     "tenant": "root",
     "protocol": 2,
-    "orgServerFqdn": "http://origin.infra.ciab.test",
+    "orgServerFqdn": "http://origin.infra.svc.cluster.local",
     "cdnName": "$CDN_NAME",
     "type": "HTTP",
     "active": true,

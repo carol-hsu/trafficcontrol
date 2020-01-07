@@ -1,0 +1,261 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: trafficops
+  namespace: infra
+spec:
+  selector:
+    func: ops
+    lang: go
+  clusterIP: 10.99.0.20
+  ports:
+    - port: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-ops
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: ops
+      lang: go
+  template:
+    metadata:
+      labels:
+        func: ops
+        lang: go
+    spec:
+      hostname: trafficops
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: ops-go
+        image: gabbro:30500/cdn-ops-go
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.20'
+        ports:
+        - containerPort: 443
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+#Router
+apiVersion: v1
+kind: Service
+metadata:
+  name: trafficrouter
+  namespace: infra
+spec:
+  selector:
+    func: router
+  clusterIP: 10.99.0.60
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+    - name: port1
+      port: 80
+    - name: port2
+      port: 443
+    - name: port3
+      port: 3333
+    - name: port4
+      port: 3443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-router
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: router
+  template:
+    metadata:
+      labels:
+        func: router
+    spec:
+      hostname: trafficrouter
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: router
+        image: gabbro:30500/cdn-router
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.60'
+        ports:
+        - containerPort: 3333
+        - containerPort: 3443
+        - containerPort: 443
+        - containerPort: 53
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+#Monitor
+apiVersion: v1
+kind: Service
+metadata:
+  name: trafficmonitor
+  namespace: infra
+spec:
+  selector:
+    func: monitor
+  clusterIP: 10.99.0.40
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-monitor
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: monitor
+  template:
+    metadata:
+      labels:
+        func: monitor
+    spec:
+      hostname: trafficmonitor
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: router
+        image: gabbro:30500/cdn-monitor
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.40'
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+#Mock origin server
+apiVersion: v1
+kind: Service
+metadata:
+  name: origin
+  namespace: infra
+spec:
+  selector:
+    func: data-server
+  clusterIP: 10.99.0.140
+  ports:
+    - port: 443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-server
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: data-server
+  template:
+    metadata:
+      labels:
+        func: data-server
+    spec:
+      hostname: origin
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      - name: content-dir
+        persistentVolumeClaim:
+          claimName: cdn-content
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: data-server
+        image: gabbro:30500/cdn-server
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.140'
+        ports:
+        - containerPort: 443
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+          - mountPath: /var/www/html
+            name: content-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cdn-client
+  namespace: infra
+spec:
+  hostname: client
+  volumes:
+  - name: secret-dir
+    persistentVolumeClaim:
+      claimName: cdn-secret
+  dnsPolicy: ClusterFirst
+  dnsConfig:
+    nameservers:
+      - 10.99.0.254
+  containers:
+  - name: client
+    image: gabbro:30500/tc-client
+    imagePullPolicy: Never
+    volumeMounts:
+      - mountPath: /shared
+        name: secret-dir
+    envFrom:
+      - configMapRef:
+          name: cdn-config

@@ -34,8 +34,11 @@ ADD enroller/server_template.json \
     traffic_ops/to-access.sh \
     /
 
-COPY dns/insert-self-into-dns.sh /usr/local/sbin
-COPY dns/set-dns.sh /usr/local/sbin
-RUN chmod 700 /usr/local/sbin/*.sh
+#COPY dns/insert-self-into-dns.sh /usr/local/sbin
+#COPY dns/set-dns.sh /usr/local/sbin
+#RUN chmod 700 /usr/local/sbin/*.sh
+
+#ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
+ADD dns/insert-self-into-dns.sh /usr/local/sbin/
 
 CMD /run.sh

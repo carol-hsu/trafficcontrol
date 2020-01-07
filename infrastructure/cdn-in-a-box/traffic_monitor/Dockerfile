@@ -47,8 +47,8 @@ ADD enroller/server_template.json \
     traffic_monitor/run.sh \
     /
 
-ADD dns/set-dns.sh \
-    dns/insert-self-into-dns.sh \
+#ADD dns/set-dns.sh \
+ADD dns/insert-self-into-dns.sh \
     /usr/local/sbin/
 
 #COPY dns/insert-self-into-dns.sh /usr/local/sbin

@@ -1,0 +1,163 @@
+## DNS server
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns
+  namespace: infra
+spec:
+  selector:
+    func: dns
+  clusterIP: 10.99.0.254
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-dns
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: dns
+  template:
+    metadata:
+      labels:
+        func: dns
+    spec:
+      hostname: dns
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsConfig:
+        nameservers:
+          - 127.0.0.1
+      containers:
+      - name: dns
+        image: gabbro:30500/cdn-dns
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.254'
+        ports:
+        - containerPort: 53
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+## Edge and Mid cache tier
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge
+  namespace: infra
+spec:
+  selector:
+    func: cache
+    role: edge
+  clusterIP: 10.99.0.100
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-edge-tier
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: cache
+      role: edge
+  template:
+    metadata:
+      labels:
+        func: cache
+        role: edge
+    spec:
+      hostname: edge
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: edge-tier
+        image: gabbro:30500/cdn-edge-tier
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.100'
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mid
+  namespace: infra
+spec:
+  selector:
+    func: cache
+    role: mid
+  clusterIP: 10.99.0.120
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-mid-tier
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: cache
+      role: mid
+  template:
+    metadata:
+      labels:
+        func: cache
+        role: mid
+    spec:
+      hostname: mid
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        nameservers:
+          - 10.99.0.254
+      containers:
+      - name: mid-tier
+        image: gabbro:30500/cdn-mid-tier
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: '10.99.0.120'
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
