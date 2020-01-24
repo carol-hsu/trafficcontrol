@@ -46,7 +46,7 @@ ADD enroller/server_template.json \
     /
 
 #ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
-ADD dns/insert-self-into-dns.sh /usr/local/sbin/
+#ADD dns/insert-self-into-dns.sh /usr/local/sbin/
 
 EXPOSE 53 80 3333 3443
 

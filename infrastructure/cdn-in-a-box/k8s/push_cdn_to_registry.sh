@@ -2,32 +2,29 @@
 
 DOCKER_REGISTRY=gabbro:30500
 #PRIVATE_REGISTRY_ENDPOINT
+TAG=0.1
 
-docker tag cdn-ops-db $DOCKER_REGISTRY/cdn-ops-db
-docker push $DOCKER_REGISTRY/cdn-ops-db
-docker tag cdn-enroller $DOCKER_REGISTRY/cdn-enroller
-docker push $DOCKER_REGISTRY/cdn-enroller
-docker tag cdn-ops-perl $DOCKER_REGISTRY/cdn-ops-perl
-docker push $DOCKER_REGISTRY/cdn-ops-perl
-docker tag cdn-ops-go $DOCKER_REGISTRY/cdn-ops-go
-docker push $DOCKER_REGISTRY/cdn-ops-go
-docker tag cdn-stats $DOCKER_REGISTRY/cdn-stats
-docker push $DOCKER_REGISTRY/cdn-stats
-#docker tag cdn-portal $DOCKER_REGISTRY/cdn-portal
-#docker push $DOCKER_REGISTRY/cdn-portal
-docker tag cdn-router $DOCKER_REGISTRY/cdn-router
-docker push $DOCKER_REGISTRY/cdn-router
-docker tag cdn-monitor $DOCKER_REGISTRY/cdn-monitor
-docker push $DOCKER_REGISTRY/cdn-monitor
-docker tag cdn-service-server $DOCKER_REGISTRY/cdn-service-server
-docker push $DOCKER_REGISTRY/cdn-service-server
-docker tag cdn-vault $DOCKER_REGISTRY/cdn-vault
-docker push $DOCKER_REGISTRY/cdn-vault
-docker tag cdn-db $DOCKER_REGISTRY/cdn-stat-db
-docker push $DOCKER_REGISTRY/cdn-stat-db
-docker tag cdn-edge-tier $DOCKER_REGISTRY/cdn-edge-tier
-docker push $DOCKER_REGISTRY/cdn-edge-tier
-docker tag cdn-dns $DOCKER_REGISTRY/cdn-dns
-docker push $DOCKER_REGISTRY/cdn-dns
-docker tag cdn-mid-tier $DOCKER_REGISTRY/cdn-mid-tier
-docker push $DOCKER_REGISTRY/cdn-mid-tier
+docker tag cdn-ops-db $DOCKER_REGISTRY/cdn-ops-db:$TAG
+docker push $DOCKER_REGISTRY/cdn-ops-db:$TAG
+docker tag cdn-enroller $DOCKER_REGISTRY/cdn-enroller:$TAG
+docker push $DOCKER_REGISTRY/cdn-enroller:$TAG
+docker tag cdn-ops-perl $DOCKER_REGISTRY/cdn-ops-perl:$TAG
+docker push $DOCKER_REGISTRY/cdn-ops-perl:$TAG
+docker tag cdn-ops-go $DOCKER_REGISTRY/cdn-ops-go:$TAG
+docker push $DOCKER_REGISTRY/cdn-ops-go:$TAG
+docker tag cdn-stats $DOCKER_REGISTRY/cdn-stats:$TAG
+docker push $DOCKER_REGISTRY/cdn-stats:$TAG
+docker tag cdn-router $DOCKER_REGISTRY/cdn-router:$TAG
+docker push $DOCKER_REGISTRY/cdn-router:$TAG
+docker tag cdn-monitor $DOCKER_REGISTRY/cdn-monitor:$TAG
+docker push $DOCKER_REGISTRY/cdn-monitor:$TAG
+docker tag cdn-service-server $DOCKER_REGISTRY/cdn-service-server:$TAG
+docker push $DOCKER_REGISTRY/cdn-service-server:$TAG
+docker tag cdn-vault $DOCKER_REGISTRY/cdn-vault:$TAG
+docker push $DOCKER_REGISTRY/cdn-vault:$TAG
+docker tag cdn-stat-db $DOCKER_REGISTRY/cdn-stat-db:$TAG
+docker push $DOCKER_REGISTRY/cdn-stat-db:$TAG
+docker tag cdn-edge-tier $DOCKER_REGISTRY/cdn-edge-tier:$TAG
+docker push $DOCKER_REGISTRY/cdn-edge-tier:$TAG
+docker tag cdn-mid-tier $DOCKER_REGISTRY/cdn-mid-tier:$TAG
+docker push $DOCKER_REGISTRY/cdn-mid-tier:$TAG

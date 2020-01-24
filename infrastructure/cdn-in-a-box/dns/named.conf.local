@@ -22,17 +22,17 @@ zone "svc.cluster.local" {
   allow-update { key svc.cluster.local.; };
 };
 
-#zone "239.16.172.in-addr.arpa" IN {
-zone "0.99.10.in-addr.arpa" IN {
-  type master;
-  file "/etc/bind/zone.ip4.arpa";
-  forwarders {};
-};
-
-## skip to set ipv6 for kubernetes
-zone "0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa" IN {
-  type master;
-  file "/etc/bind/zone.ip6.arpa";
-  forwarders {};
-};
-
+##zone "239.16.172.in-addr.arpa" IN {
+#zone "0.99.10.in-addr.arpa" IN {
+#  type master;
+#  file "/etc/bind/zone.ip4.arpa";
+#  forwarders {};
+#};
+#
+### skip to set ipv6 for kubernetes
+#zone "0.0.0.0.0.0.0.0.0.0.0.0.0.8.0.0.0.0.0.0.1.0.0.4.9.1.0.c.f.ip6.arpa" IN {
+#  type master;
+#  file "/etc/bind/zone.ip6.arpa";
+#  forwarders {};
+#};
+#

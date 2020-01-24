@@ -18,7 +18,7 @@
 # under the License.
 
 #set-dns.sh
-insert-self-into-dns.sh
+#insert-self-into-dns.sh
 
 . /to-access.sh
 

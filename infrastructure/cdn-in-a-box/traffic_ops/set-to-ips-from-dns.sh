@@ -22,7 +22,9 @@ base_data_dir="/traffic_ops_data"
 servers_dir="${base_data_dir}/servers"
 profiles_dir="${base_data_dir}/profiles"
 
-service_names='db trafficops trafficops-perl trafficportal trafficmonitor trafficvault trafficrouter enroller dns'
+#service_names='db trafficops trafficops-perl trafficportal trafficmonitor trafficvault trafficrouter enroller dns'
+#v0.2: remove dns and portal
+service_names='db trafficops trafficops-perl trafficmonitor trafficvault trafficrouter enroller'
 
 service_domain='infra.svc.cluster.local'
 

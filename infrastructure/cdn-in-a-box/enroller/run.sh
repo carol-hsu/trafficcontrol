@@ -22,7 +22,7 @@ set -x
 . /to-access.sh
 
 #set-dns.sh
-insert-self-into-dns.sh
+#insert-self-into-dns.sh
 
 export TO_URL=https://$TO_FQDN:$TO_PORT
 export TO_USER=$TO_ADMIN_USER

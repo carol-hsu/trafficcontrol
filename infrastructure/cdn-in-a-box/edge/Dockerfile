@@ -60,9 +60,9 @@ ADD infrastructure/cdn-in-a-box/cache/run.sh \
     infrastructure/cdn-in-a-box/enroller/server_template.json \
     /
 
-ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
+#ADD infrastructure/cdn-in-a-box/dns/insert-self-into-dns.sh \
 #    infrastructure/cdn-in-a-box/dns/set-dns.sh \
-    /usr/local/sbin/
+#    /usr/local/sbin/
 
 ADD infrastructure/cdn-in-a-box/edge/run.sh /opt/init.d/99-run.sh
 

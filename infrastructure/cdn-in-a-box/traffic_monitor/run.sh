@@ -39,7 +39,7 @@ do
 done
 
 #set-dns.sh
-insert-self-into-dns.sh
+#insert-self-into-dns.sh
 
 source /to-access.sh
 

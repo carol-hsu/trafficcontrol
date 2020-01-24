@@ -27,27 +27,6 @@ $TTL 30
 									IN NS   dns.infra.svc.cluster.local.
 
 $ORIGIN infra.svc.cluster.local.
-dns                IN A    10.99.0.254
 
-$TTL 86400    ; 1 day
-db            A    10.99.0.10
-$TTL 30    ; 30 seconds
-dns            A    10.99.0.254
-$TTL 86400    ; 1 day
-enroller        A    10.99.0.200
-origin            A    10.99.0.140
-trafficmonitor        A    10.99.0.40
-trafficops        A    10.99.0.20
-trafficops-perl        A    10.99.0.21
-trafficportal        A    10.99.0.30
-trafficrouter        A    10.99.0.60
-trafficstats        A    10.99.0.70
-trafficvault        A    10.99.0.50
-influxdb        A    10.99.0.11
-edge            A   10.99.0.100
-mid             A   10.99.0.120
-origin          A   10.99.0.140
-
-$ORIGIN svc.cluster.local.
-$TTL 30    ; 30 seconds
-default            NS    trafficrouter.infra
+$ORIGIN default.svc.cluster.local.
+@   NS  trafficrouter.infra.svc.cluster.local.

@@ -48,8 +48,8 @@ ADD enroller/server_template.json \
     /
 
 #ADD dns/set-dns.sh \
-ADD dns/insert-self-into-dns.sh \
-    /usr/local/sbin/
+#ADD dns/insert-self-into-dns.sh \
+#    /usr/local/sbin/
 
 #COPY dns/insert-self-into-dns.sh /usr/local/sbin
 #COPY dns/set-dns.sh /usr/local/sbin

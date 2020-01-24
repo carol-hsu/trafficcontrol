@@ -1,3 +1,5 @@
 *.rpm
 traffic_ops/ca
 optional/vpn/vpnca
+# remove some custom scripts
+k8s/*.sh

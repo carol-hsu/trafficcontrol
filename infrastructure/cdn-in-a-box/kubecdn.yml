@@ -1,31 +1,229 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-op-db
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-	func: traffic-op
-        role: db
-    spec:
-      volumes:
-      - name: db-store
-        hostPath:
-          path: /var/lib/postgresql/data
-      - name: secret-dir
-        hostPath:
-          path: shared #container volume
-      containers:
-      - name: db
-        image: cdn-in-a-box_db
-        volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: db-store
-          - mountPath: /shared
-            name: secret-dir
-#        ports:
-#        - containerPort: 80
----
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# To use this compose you should first build Traffic Ops and then copy the RPM to :
+#
+# trafficcontrol/infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
+#
+#      cd trafficcontrol/infrastructure/cdn-in-a-box
+#
+# Adjust the settings in `variables-k8s.env` to suit your needs.
+#
+#      docker-compose up -d
+#
+# The Traffic Ops Go API will then be available on https://localhost:6443,
+# the Perl API on https://localhost:60443, and the postgres database on localhost 5432.
+#
+# Note that this setup is intended for testing and not for production use.
 
+---
+version: '3.7'
+
+services:
+  # db is the Traffic Ops database running in postgresql.  Only trafficops and trafficops-perl need to have access to it.
+  # All other components access the database thru the Traffic Ops API
+  db:
+    build:
+      context: .
+      dockerfile: traffic_ops/Dockerfile-db
+    image: cdn-ops-db
+    volumes:
+      - /var/lib/postgresql/data
+      - shared:/shared
+    env_file:
+      - variables-k8s.env
+    # TODO: change to expose: "5432" to limit to containers
+
+  # trafficops runs only the Go version of Traffic Ops in a container.  All Traffic Ops API endpoints that have
+  # been rewritten in Go will be handled here.  All that have not are passed to the trafficops-perl service
+  # defined below
+  trafficops:
+    build:
+      context: .
+      dockerfile: traffic_ops/Dockerfile-go
+    image: cdn-ops-go
+    depends_on:
+      - db
+      - enroller
+      - trafficops-perl
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # trafficops-perl runs the legacy Traffic Ops in Perl using the Mojolicious framework.  This remains
+  # in place until all API endpoints have been rewritten in Go
+  trafficops-perl:
+    build:
+      context: ../..
+      dockerfile: infrastructure/cdn-in-a-box/traffic_ops/Dockerfile
+      args:
+        TRAFFIC_OPS_RPM: infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
+    image: cdn-ops-perl
+    depends_on:
+      - db
+      - enroller
+    env_file:
+      - variables-k8s.env
+    # TODO: change to expose: "60443" to limit to containers
+    volumes:
+      - ./traffic_ops/ca:/ca
+      - shared:/shared
+
+  # trafficmonitor is an HTTP service that monitors the caches in a CDN for a variety of metrics
+  trafficmonitor:
+    build:
+      context: .
+      dockerfile: traffic_monitor/Dockerfile
+      args:
+        TRAFFIC_MONITOR_RPM: traffic_monitor/traffic_monitor.rpm
+    image: cdn-monitor
+    depends_on:
+      - enroller
+    volumes:
+      - shared:/shared
+    env_file:
+      - variables-k8s.env
+
+  # trafficrouter routes clients to the most optimal cache
+  trafficrouter:
+    build:
+      context: .
+      dockerfile: traffic_router/Dockerfile
+      args:
+        TRAFFIC_ROUTER_RPM: traffic_router/traffic_router.rpm
+        TOMCAT_RPM: traffic_router/tomcat.rpm
+    image: cdn-router
+    depends_on:
+      - enroller
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # trafficstats collect traffic information
+  trafficstats:
+    build:
+      context: .
+      dockerfile: traffic_stats/Dockerfile
+    image: cdn-stats
+    depends_on:
+      - enroller
+      - influxdb
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  influxdb:
+    build:
+      context: .
+      dockerfile: traffic_stats/Dockerfile-influxdb
+    image: cdn-stat-db
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # trafficvault runs a riak container to store private keys
+  trafficvault:
+    build:
+      context: .
+      dockerfile: traffic_vault/Dockerfile
+    image: cdn-vault
+    depends_on:
+      - enroller
+    environment:
+      - CLUSTER_NAME=trafficvault
+    labels:
+      - "com.basho.riak.cluster.name=trafficvault"
+    volumes:
+      - schemas:/etc/riak/schemas
+      - shared:/shared
+    env_file:
+      - variables-k8s.env
+
+  # edge cache
+  edge:
+    privileged: True
+    build:
+      context: ../..
+      dockerfile: infrastructure/cdn-in-a-box/edge/Dockerfile
+    image: cdn-edge-tier
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # mid cache
+  mid:
+    privileged: True
+    build:
+      context: ../..
+      dockerfile: infrastructure/cdn-in-a-box/mid/Dockerfile
+    image: cdn-mid-tier
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # origin provides the content to be distributed through the CDN caches
+  origin:
+    build:
+      context: .
+      dockerfile: origin/Dockerfile
+    image: cdn-service-server
+    depends_on:
+      - enroller
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+      - ./origin/content:/var/www/html
+
+
+  # enroller provides a way to register component instances with traffic_ops
+  enroller:
+    build:
+      context: ../..
+      dockerfile: infrastructure/cdn-in-a-box/enroller/Dockerfile
+    image: cdn-enroller
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+  # Bind9 DNS services work in combination with the traffic router to route clients to the optimal cache
+  dns:
+    build:
+      context: .
+      dockerfile: dns/Dockerfile
+    image: cdn-dns
+    env_file:
+      - variables-k8s.env
+    volumes:
+      - shared:/shared
+
+volumes:
+  schemas:
+    external: false
+  shared:
+    external: false
+  content:
+    external: false
+  ca:
+    external: false

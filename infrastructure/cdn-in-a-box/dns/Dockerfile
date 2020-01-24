@@ -37,8 +37,8 @@ ADD dns/set-self-dns.sh dns/set-dns-update.sh /usr/local/sbin/
 ADD dns/named.conf.local \
     dns/named.conf.options \
     dns/zone.svc.cluster.local \
-	dns/zone.ip4.arpa \
-	dns/zone.ip6.arpa \
+#	dns/zone.ip4.arpa \
+#	dns/zone.ip6.arpa \
 	/etc/bind/
 
 COPY traffic_ops/to-access.sh /

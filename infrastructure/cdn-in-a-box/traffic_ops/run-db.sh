@@ -17,6 +17,6 @@
 # under the License.
 
 #sh set-dns.sh
-insert-self-into-dns.sh
+#insert-self-into-dns.sh
 
 exec /docker-entrypoint.sh postgres
