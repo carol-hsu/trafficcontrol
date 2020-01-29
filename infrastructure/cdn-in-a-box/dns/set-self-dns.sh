@@ -41,6 +41,7 @@ function add_zone_entry {
 }
 
 dns_container_hostname='dns'
-ip="$(dig +short ${dns_container_hostname})"
+#ip="$(dig +short ${dns_container_hostname})"
+ip=$MY_SERVICE_IP
 
 add_zone_entry "${dns_container_hostname}" "${ip}" "A"

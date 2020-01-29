@@ -36,9 +36,13 @@ spec:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
+      dnsPolicy: None
       dnsConfig:
         nameservers:
           - 127.0.0.1
+        options:
+          - name: ndots
+            value: "0"
       containers:
       - name: dns
         image: gabbro:30500/cdn-dns:cps-0.1
