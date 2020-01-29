@@ -42,7 +42,7 @@ do
 	if [[ -z $$v ]]; then echo "$v is unset"; exit 1; fi
 done
 
-set-dns.sh
+#set-dns.sh
 insert-self-into-dns.sh
 
 # Source to-access functions and FQDN vars
@@ -51,10 +51,10 @@ source /to-access.sh
 # Write config files
 . /config.sh
 
-while ! nc "$TO_PERL_FQDN" $TO_PERL_PORT </dev/null 2>/dev/null; do
-        echo "waiting for $TO_PERL_FQDN:$TO_PERL_PORT"
-        sleep 3
-done
+#while ! nc "$TO_PERL_FQDN" $TO_PERL_PORT </dev/null 2>/dev/null; do
+#        echo "waiting for $TO_PERL_FQDN:$TO_PERL_PORT"
+#        sleep 3
+#done
 
 cd /opt/traffic_ops/app
 

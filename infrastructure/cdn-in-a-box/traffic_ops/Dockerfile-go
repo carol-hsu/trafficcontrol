@@ -23,7 +23,8 @@
 FROM centos:7
 
 # Override TRAFFIC_OPS_RPM arg to use a different one using --build-arg TRAFFIC_OPS_RPM=...  Can be local file or http://...
-ARG TRAFFIC_OPS_RPM=infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
+#ARG TRAFFIC_OPS_RPM=infrastructure/cdn-in-a-box/traffic_ops/traffic_ops.rpm
+ARG TRAFFIC_OPS_RPM=traffic_ops/traffic_ops.rpm
 COPY $TRAFFIC_OPS_RPM /
 
 RUN mkdir /etc/cron.d && \
@@ -34,11 +35,14 @@ RUN mkdir /etc/cron.d && \
 	yum -y install jq bind-utils net-tools gettext perl-JSON-PP nmap-ncat openssl postgresql96 && \
 	yum clean all
 
-COPY infrastructure/cdn-in-a-box/enroller/server_template.json \
-    infrastructure/cdn-in-a-box/traffic_ops/config.sh \
-    infrastructure/cdn-in-a-box/traffic_ops/run-go.sh \
-    infrastructure/cdn-in-a-box/traffic_ops/to-access.sh \
+COPY enroller/server_template.json \
+    traffic_ops/config.sh \
+    traffic_ops/run-go.sh \
+    traffic_ops/to-access.sh \
     /
+
+ADD dns/insert-self-into-dns.sh /usr/local/sbin/
+#ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
 
 EXPOSE 443
 WORKDIR /opt/traffic_ops/app

@@ -21,7 +21,8 @@
 set -x
 . /to-access.sh
 
-set-dns.sh
+#set-dns.sh
+echo "domain ciab.test" >> /etc/resolv.conf
 insert-self-into-dns.sh
 
 export TO_URL=https://$TO_FQDN:$TO_PORT

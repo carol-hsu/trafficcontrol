@@ -32,6 +32,10 @@ RUN mkdir -p /var/www/html/
 ADD origin/lighttpd.conf /etc/lighttpd/lighttpd.conf
 ADD origin/run.sh traffic_ops/to-access.sh /
 
+ADD dns/insert-self-into-dns.sh \
+    dns/set-dns.sh \
+    /usr/local/sbin/
+
 EXPOSE 80
 
 CMD /run.sh
