@@ -1,0 +1,248 @@
+Building trafficstats
+Step 1/6 : FROM centos:7
+ ---> 67fa590cfc1c
+Step 2/6 : ARG TRAFFIC_TS_RPM=traffic_stats/traffic_stats.rpm
+ ---> Running in 999c989b1cfd
+Removing intermediate container 999c989b1cfd
+ ---> 2c57eec9c999
+Step 3/6 : ADD $TRAFFIC_TS_RPM /
+ ---> 225bcab28b10
+Step 4/6 : RUN yum install -y epel-release &&     yum install -y /$(basename $TRAFFIC_TS_RPM)         jq         nmap-ncat         net-tools         gettext         bind-utils         openssl &&     rm /$(basename $TRAFFIC_TS_RPM) &&     yum clean all
+ ---> Running in d43cb83a5618
+Loaded plugins: fastestmirror, ovl
+Determining fastest mirrors
+ * base: www.gtlib.gatech.edu
+ * extras: www.gtlib.gatech.edu
+ * updates: us.mirror.nsec.pt
+Resolving Dependencies
+--> Running transaction check
+---> Package epel-release.noarch 0:7-11 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                Arch             Version         Repository        Size
+================================================================================
+Installing:
+ epel-release           noarch           7-11            extras            15 k
+
+Transaction Summary
+================================================================================
+Install  1 Package
+
+Total download size: 15 k
+Installed size: 24 k
+Downloading packages:
+[91mwarning: /var/cache/yum/x86_64/7/extras/packages/epel-release-7-11.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+[0mPublic key for epel-release-7-11.noarch.rpm is not installed
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+[91mImporting GPG key 0xF4A80EB5:
+ Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+ Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+ Package    : centos-release-7-6.1810.2.el7.centos.x86_64 (@CentOS)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+[0mRunning transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : epel-release-7-11.noarch                                     1/1 
+  Verifying  : epel-release-7-11.noarch                                     1/1 
+
+Installed:
+  epel-release.noarch 0:7-11                                                    
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Examining /traffic_stats.rpm: traffic_stats-4.0.0-10413.001b75da.el7.x86_64
+Marking /traffic_stats.rpm to be installed
+Loading mirror speeds from cached hostfile
+ * base: www.gtlib.gatech.edu
+ * epel: reflector.westga.edu
+ * extras: www.gtlib.gatech.edu
+ * updates: us.mirror.nsec.pt
+[91mhttp://csc.mcs.sdsmt.edu/epel/7/x86_64/repodata/9ab77abe309d18f7df06cebd371c1bd6ce879965cb65d3c369f1f7053358054e-updateinfo.xml.bz2: [Errno 12] Timeout on http://csc.mcs.sdsmt.edu/epel/7/x86_64/repodata/9ab77abe309d18f7df06cebd371c1bd6ce879965cb65d3c369f1f7053358054e-updateinfo.xml.bz2: (28, 'Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds')
+[0m[91mTrying other mirror.
+[0mResolving Dependencies
+--> Running transaction check
+---> Package bind-utils.x86_64 32:9.11.4-9.P2.el7 will be installed
+--> Processing Dependency: bind-libs-lite(x86-64) = 32:9.11.4-9.P2.el7 for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: bind-libs(x86-64) = 32:9.11.4-9.P2.el7 for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: liblwres.so.160()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libisccfg.so.160()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libisc.so.169()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libirs.so.160()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libdns.so.1102()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libbind9.so.160()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+--> Processing Dependency: libGeoIP.so.1()(64bit) for package: 32:bind-utils-9.11.4-9.P2.el7.x86_64
+---> Package gettext.x86_64 0:0.19.8.1-2.el7 will be installed
+--> Processing Dependency: gettext-libs(x86-64) = 0.19.8.1-2.el7 for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libgomp.so.1(GOMP_1.0)(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libunistring.so.0()(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libgomp.so.1()(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libgettextsrc-0.19.8.1.so()(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libgettextlib-0.19.8.1.so()(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+--> Processing Dependency: libcroco-0.6.so.3()(64bit) for package: gettext-0.19.8.1-2.el7.x86_64
+---> Package jq.x86_64 0:1.6-1.el7 will be installed
+--> Processing Dependency: libonig.so.2()(64bit) for package: jq-1.6-1.el7.x86_64
+---> Package net-tools.x86_64 0:2.0-0.25.20131004git.el7 will be installed
+---> Package nmap-ncat.x86_64 2:6.40-19.el7 will be installed
+--> Processing Dependency: libpcap.so.1()(64bit) for package: 2:nmap-ncat-6.40-19.el7.x86_64
+---> Package openssl.x86_64 1:1.0.2k-19.el7 will be installed
+--> Processing Dependency: openssl-libs(x86-64) = 1:1.0.2k-19.el7 for package: 1:openssl-1.0.2k-19.el7.x86_64
+--> Processing Dependency: make for package: 1:openssl-1.0.2k-19.el7.x86_64
+---> Package traffic_stats.x86_64 0:4.0.0-10413.001b75da.el7 will be installed
+--> Running transaction check
+---> Package GeoIP.x86_64 0:1.5.0-14.el7 will be installed
+--> Processing Dependency: geoipupdate for package: GeoIP-1.5.0-14.el7.x86_64
+---> Package bind-libs.x86_64 32:9.11.4-9.P2.el7 will be installed
+--> Processing Dependency: bind-license = 32:9.11.4-9.P2.el7 for package: 32:bind-libs-9.11.4-9.P2.el7.x86_64
+---> Package bind-libs-lite.x86_64 32:9.11.4-9.P2.el7 will be installed
+---> Package gettext-libs.x86_64 0:0.19.8.1-2.el7 will be installed
+---> Package libcroco.x86_64 0:0.6.12-4.el7 will be installed
+---> Package libgomp.x86_64 0:4.8.5-39.el7 will be installed
+---> Package libpcap.x86_64 14:1.5.3-11.el7 will be installed
+---> Package libunistring.x86_64 0:0.9.3-9.el7 will be installed
+---> Package make.x86_64 1:3.82-24.el7 will be installed
+---> Package oniguruma.x86_64 0:5.9.5-3.el7 will be installed
+---> Package openssl-libs.x86_64 1:1.0.2k-16.el7_6.1 will be updated
+---> Package openssl-libs.x86_64 1:1.0.2k-19.el7 will be an update
+--> Running transaction check
+---> Package bind-license.noarch 32:9.9.4-74.el7_6.2 will be updated
+---> Package bind-license.noarch 32:9.11.4-9.P2.el7 will be an update
+---> Package geoipupdate.x86_64 0:2.5.0-1.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package          Arch     Version                       Repository        Size
+================================================================================
+Installing:
+ bind-utils       x86_64   32:9.11.4-9.P2.el7            base             258 k
+ gettext          x86_64   0.19.8.1-2.el7                base             1.0 M
+ jq               x86_64   1.6-1.el7                     epel             167 k
+ net-tools        x86_64   2.0-0.25.20131004git.el7      base             306 k
+ nmap-ncat        x86_64   2:6.40-19.el7                 base             206 k
+ openssl          x86_64   1:1.0.2k-19.el7               base             493 k
+ traffic_stats    x86_64   4.0.0-10413.001b75da.el7      /traffic_stats    20 M
+Installing for dependencies:
+ GeoIP            x86_64   1.5.0-14.el7                  base             1.5 M
+ bind-libs        x86_64   32:9.11.4-9.P2.el7            base             154 k
+ bind-libs-lite   x86_64   32:9.11.4-9.P2.el7            base             1.1 M
+ geoipupdate      x86_64   2.5.0-1.el7                   base              35 k
+ gettext-libs     x86_64   0.19.8.1-2.el7                base             501 k
+ libcroco         x86_64   0.6.12-4.el7                  base             105 k
+ libgomp          x86_64   4.8.5-39.el7                  base             158 k
+ libpcap          x86_64   14:1.5.3-11.el7               base             138 k
+ libunistring     x86_64   0.9.3-9.el7                   base             293 k
+ make             x86_64   1:3.82-24.el7                 base             421 k
+ oniguruma        x86_64   5.9.5-3.el7                   epel             129 k
+Updating for dependencies:
+ bind-license     noarch   32:9.11.4-9.P2.el7            base              88 k
+ openssl-libs     x86_64   1:1.0.2k-19.el7               base             1.2 M
+
+Transaction Summary
+================================================================================
+Install  7 Packages (+11 Dependent packages)
+Upgrade             (  2 Dependent packages)
+
+Total size: 28 M
+Total download size: 8.2 M
+Downloading packages:
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+[91mwarning: /var/cache/yum/x86_64/7/epel/packages/jq-1.6-1.el7.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID 352c64e5: NOKEY
+[0mPublic key for jq-1.6-1.el7.x86_64.rpm is not installed
+--------------------------------------------------------------------------------
+Total                                               11 MB/s | 8.2 MB  00:00     
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+[91mImporting GPG key 0x352C64E5:
+ Userid     : "Fedora EPEL (7) <epel@fedoraproject.org>"
+ Fingerprint: 91e9 7d7c 4a5e 96f1 7f3e 888f 6a2f aea2 352c 64e5
+ Package    : epel-release-7-11.noarch (@extras)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+[0mRunning transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Updating   : 1:openssl-libs-1.0.2k-19.el7.x86_64                         1/22 
+  Updating   : 32:bind-license-9.11.4-9.P2.el7.noarch                      2/22 
+  Installing : libgomp-4.8.5-39.el7.x86_64                                 3/22 
+  Installing : libcroco-0.6.12-4.el7.x86_64                                4/22 
+  Installing : libunistring-0.9.3-9.el7.x86_64                             5/22 
+  Installing : gettext-libs-0.19.8.1-2.el7.x86_64                          6/22 
+  Installing : oniguruma-5.9.5-3.el7.x86_64                                7/22 
+  Installing : 14:libpcap-1.5.3-11.el7.x86_64                              8/22 
+  Installing : 1:make-3.82-24.el7.x86_64                                   9/22 
+  Installing : geoipupdate-2.5.0-1.el7.x86_64                             10/22 
+  Installing : GeoIP-1.5.0-14.el7.x86_64                                  11/22 
+  Installing : 32:bind-libs-lite-9.11.4-9.P2.el7.x86_64                   12/22 
+  Installing : 32:bind-libs-9.11.4-9.P2.el7.x86_64                        13/22 
+  Installing : 32:bind-utils-9.11.4-9.P2.el7.x86_64                       14/22 
+  Installing : 1:openssl-1.0.2k-19.el7.x86_64                             15/22 
+  Installing : 2:nmap-ncat-6.40-19.el7.x86_64                             16/22 
+  Installing : jq-1.6-1.el7.x86_64                                        17/22 
+  Installing : gettext-0.19.8.1-2.el7.x86_64                              18/22 
+install-info: No such file or directory for /usr/share/info/gettext.info.gz
+  Installing : traffic_stats-4.0.0-10413.001b75da.el7.x86_64              19/22 
+  Installing : net-tools-2.0-0.25.20131004git.el7.x86_64                  20/22 
+  Cleanup    : 32:bind-license-9.9.4-74.el7_6.2.noarch                    21/22 
+  Cleanup    : 1:openssl-libs-1.0.2k-16.el7_6.1.x86_64                    22/22 
+  Verifying  : geoipupdate-2.5.0-1.el7.x86_64                              1/22 
+  Verifying  : libunistring-0.9.3-9.el7.x86_64                             2/22 
+  Verifying  : jq-1.6-1.el7.x86_64                                         3/22 
+  Verifying  : gettext-libs-0.19.8.1-2.el7.x86_64                          4/22 
+  Verifying  : GeoIP-1.5.0-14.el7.x86_64                                   5/22 
+  Verifying  : libcroco-0.6.12-4.el7.x86_64                                6/22 
+  Verifying  : gettext-0.19.8.1-2.el7.x86_64                               7/22 
+  Verifying  : net-tools-2.0-0.25.20131004git.el7.x86_64                   8/22 
+  Verifying  : libgomp-4.8.5-39.el7.x86_64                                 9/22 
+  Verifying  : 1:make-3.82-24.el7.x86_64                                  10/22 
+  Verifying  : 32:bind-license-9.11.4-9.P2.el7.noarch                     11/22 
+  Verifying  : 1:openssl-1.0.2k-19.el7.x86_64                             12/22 
+  Verifying  : 32:bind-libs-lite-9.11.4-9.P2.el7.x86_64                   13/22 
+  Verifying  : 14:libpcap-1.5.3-11.el7.x86_64                             14/22 
+  Verifying  : 32:bind-utils-9.11.4-9.P2.el7.x86_64                       15/22 
+  Verifying  : 1:openssl-libs-1.0.2k-19.el7.x86_64                        16/22 
+  Verifying  : 2:nmap-ncat-6.40-19.el7.x86_64                             17/22 
+  Verifying  : 32:bind-libs-9.11.4-9.P2.el7.x86_64                        18/22 
+  Verifying  : traffic_stats-4.0.0-10413.001b75da.el7.x86_64              19/22 
+  Verifying  : oniguruma-5.9.5-3.el7.x86_64                               20/22 
+  Verifying  : 32:bind-license-9.9.4-74.el7_6.2.noarch                    21/22 
+  Verifying  : 1:openssl-libs-1.0.2k-16.el7_6.1.x86_64                    22/22 
+
+Installed:
+  bind-utils.x86_64 32:9.11.4-9.P2.el7                                          
+  gettext.x86_64 0:0.19.8.1-2.el7                                               
+  jq.x86_64 0:1.6-1.el7                                                         
+  net-tools.x86_64 0:2.0-0.25.20131004git.el7                                   
+  nmap-ncat.x86_64 2:6.40-19.el7                                                
+  openssl.x86_64 1:1.0.2k-19.el7                                                
+  traffic_stats.x86_64 0:4.0.0-10413.001b75da.el7                               
+
+Dependency Installed:
+  GeoIP.x86_64 0:1.5.0-14.el7               bind-libs.x86_64 32:9.11.4-9.P2.el7 
+  bind-libs-lite.x86_64 32:9.11.4-9.P2.el7  geoipupdate.x86_64 0:2.5.0-1.el7    
+  gettext-libs.x86_64 0:0.19.8.1-2.el7      libcroco.x86_64 0:0.6.12-4.el7      
+  libgomp.x86_64 0:4.8.5-39.el7             libpcap.x86_64 14:1.5.3-11.el7      
+  libunistring.x86_64 0:0.9.3-9.el7         make.x86_64 1:3.82-24.el7           
+  oniguruma.x86_64 0:5.9.5-3.el7           
+
+Dependency Updated:
+  bind-license.noarch 32:9.11.4-9.P2.el7   openssl-libs.x86_64 1:1.0.2k-19.el7  
+
+Complete!
+Loaded plugins: fastestmirror, ovl
+Cleaning repos: base epel extras updates
+Cleaning up list of fastest mirrors
+Removing intermediate container d43cb83a5618
+ ---> 6de8eebc47f4
+Step 5/6 : ADD enroller/server_template.json     traffic_ops/to-access.sh     traffic_stats/run.sh     /
+ ---> 46e5f302e8a6
+Step 6/6 : ENTRYPOINT /run.sh
+ ---> Running in 47740a1e9545
+Removing intermediate container 47740a1e9545
+ ---> b02b7ccbc03e
+
+Successfully built b02b7ccbc03e
+Successfully tagged cdn-stats:cps

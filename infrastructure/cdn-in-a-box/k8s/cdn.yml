@@ -1,216 +1,52 @@
-## DNS server
+## Enroller
 apiVersion: v1
 kind: Service
 metadata:
-  name: dns
+  name: enroller
   namespace: infra
 spec:
   selector:
-    func: dns
-  clusterIP: 10.99.0.254
-  ports:
-    - name: dns-tcp
-      protocol: TCP
-      port: 53
-    - name: dns-udp
-      protocol: UDP
-      port: 53
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-dns
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: dns
-  template:
-    metadata:
-      labels:
-        func: dns
-    spec:
-      hostname: dns
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      dnsConfig:
-        nameservers:
-          - 127.0.0.1
-      containers:
-      - name: dns
-        image: gabbro:30500/cdn-dns
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          value: '10.99.0.254'
-        ports:
-        - containerPort: 53
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-## Edge and Mid cache tier
-apiVersion: v1
-kind: Service
-metadata:
-  name: edge
-  namespace: infra
-spec:
-  selector:
-    func: cache
-    role: edge
-  clusterIP: 10.99.0.100
+    func: enroll
+## somehow no port exposing in docker-compose file
   ports:
     - port: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cdn-edge-tier
+  name: cdn-enroller
   namespace: infra
 spec:
   replicas: 1
   selector:
     matchLabels:
-      func: cache
-      role: edge
+      func: enroll
   template:
     metadata:
       labels:
-        func: cache
-        role: edge
+        func: enroll
     spec:
-      hostname: edge
+      hostname: enroller
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
-      - name: edge-tier
-        image: gabbro:30500/cdn-edge-tier
+      - name: enroller
+        image: gabbro:30500/cdn-enroller:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.100'
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mid
-  namespace: infra
-spec:
-  selector:
-    func: cache
-    role: mid
-  clusterIP: 10.99.0.120
-  ports:
-    - port: 80
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-mid-tier
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: cache
-      role: mid
-  template:
-    metadata:
-      labels:
-        func: cache
-        role: mid
-    spec:
-      hostname: mid
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
-      containers:
-      - name: mid-tier
-        image: gabbro:30500/cdn-mid-tier
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          value: '10.99.0.120'
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-## 2 DBs: for influxdb: traffic stats, and for db: traffic operations
-apiVersion: v1
-kind: Service
-metadata:
-  name: influxdb 
-  namespace: infra
-spec:
-  selector:
-    func: db
-    role: stat
-  clusterIP: 10.99.0.11
-  ports:
-    - port: 8086
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-stat-db
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: db
-      role: stat
-  template:
-    metadata:
-      labels:
-        func: db
-        role: stat
-    spec:
-      hostname: influxdb
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
-      containers:
-      - name: stat-db
-        image: gabbro:30500/cdn-stat-db
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          value: '10.99.0.11'
+          value: $(ENROLLER_SERVICE_HOST)
         ports:
-        - containerPort: 8086
+        - containerPort: 80
         volumeMounts:
           - mountPath: /shared
             name: secret-dir
@@ -218,6 +54,7 @@ spec:
           - configMapRef:
               name: cdn-config
 ---
+##OPS DB
 apiVersion: v1
 kind: Service
 metadata:
@@ -227,7 +64,6 @@ spec:
   selector:
     func: db
     role: ops
-  clusterIP: 10.99.0.10
   ports:
     - port: 5432
 ---
@@ -249,23 +85,26 @@ spec:
         role: ops
     spec:
       hostname: db
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
       - name: postgres-data
         emptyDir: {}
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: ops-db
-        image: gabbro:30500/cdn-ops-db
+        image: gabbro:30500/cdn-ops-db:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.10'
+          value: $(DB_SERVICE_HOST)
         ports:
         - containerPort: 5432
         volumeMounts:
@@ -273,168 +112,6 @@ spec:
             name: secret-dir
           - mountPath: /var/lib/postgresql/data
             name: postgres-data
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-## Enroller
-apiVersion: v1
-kind: Service
-metadata:
-  name: enroller
-  namespace: infra
-spec:
-  selector:
-    func: enroll
-  clusterIP: 10.99.0.200
-## somehow no port exposing in docker-compose file
-  ports:
-    - port: 80
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-enroller
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: enroll
-  template:
-    metadata:
-      labels:
-        func: enroll
-    spec:
-      hostname: enroller
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
-      containers:
-      - name: enroller
-        image: gabbro:30500/cdn-enroller
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          value: '10.99.0.200'
-        ports:
-        - containerPort: 80
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-#vault: create credentials
-apiVersion: v1
-kind: Service
-metadata:
-  name: trafficvault
-  namespace: infra
-spec:
-  selector:
-    func: secret
-  clusterIP: 10.99.0.50
-## not sure what these ports for..
-  ports:
-    - name: port1
-      port: 8087
-    - name: port2
-      port: 8098
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-traffic-vault
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: secret
-  template:
-    metadata:
-      labels:
-        func: secret
-    spec:
-      hostname: trafficvault
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      - name: schema
-        persistentVolumeClaim:
-          claimName: cdn-schemas
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
-      containers:
-      - name: vault
-        image: gabbro:30500/cdn-vault
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          value: '10.99.0.50'
-        ports:
-        - containerPort: 8087
-        - containerPort: 8098
-        env:
-        - name: CLUSTER_NAME
-          value: trafficvault
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
-          - mountPath: /etc/riak/schemas
-            name: schema
-        envFrom:
-          - configMapRef:
-              name: cdn-config
----
-#statistic manager: no expose service
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cdn-stats
-  namespace: infra
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      func: stats
-  template:
-    metadata:
-      labels:
-        func: stats
-    spec:
-      hostname: trafficstats
-      volumes:
-      - name: secret-dir
-        persistentVolumeClaim:
-          claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
-      containers:
-      - name: stats
-        image: gabbro:30500/cdn-stats
-        imagePullPolicy: Never
-        env:
-        - name: MY_SERVICE_IP
-          #use pod IP instead
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        volumeMounts:
-          - mountPath: /shared
-            name: secret-dir
         envFrom:
           - configMapRef:
               name: cdn-config
@@ -449,7 +126,6 @@ spec:
   selector:
     func: ops
     lang: perl
-  clusterIP: 10.99.0.21
   ports:
     - port: 443
 ---
@@ -471,6 +147,13 @@ spec:
         lang: perl
     spec:
       hostname: trafficops-perl
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
@@ -478,17 +161,13 @@ spec:
       - name: ops-ca
         persistentVolumeClaim:
           claimName: cdn-ops-ca
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: ops-perl
-        image: gabbro:30500/cdn-ops-perl
+        image: gabbro:30500/cdn-ops-perl:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.21'
+          value: $(TRAFFICOPS_PERL_SERVICE_HOST)
         ports:
         - containerPort: 443
         volumeMounts:
@@ -509,7 +188,6 @@ spec:
   selector:
     func: ops
     lang: go
-  clusterIP: 10.99.0.20
   ports:
     - port: 443
 ---
@@ -531,23 +209,123 @@ spec:
         lang: go
     spec:
       hostname: trafficops
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: ops-go
-        image: gabbro:30500/cdn-ops-go
+        image: gabbro:30500/cdn-ops-go:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.20'
+          value: $(TRAFFICOPS_SERVICE_HOST)        
         ports:
         - containerPort: 443
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+## STATS DB influxdb
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb 
+  namespace: infra
+spec:
+  selector:
+    func: db
+    role: stat
+  ports:
+    - port: 8086
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-stat-db
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: db
+      role: stat
+  template:
+    metadata:
+      labels:
+        func: db
+        role: stat
+    spec:
+      hostname: influxdb
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      containers:
+      - name: stat-db
+        image: gabbro:30500/cdn-stat-db:cps-0.1
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: $(INFLUXDB_SERVICE_HOST)
+        ports:
+        - containerPort: 8086
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+#statistic manager: no expose service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-stats
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: stats
+  template:
+    metadata:
+      labels:
+        func: stats
+    spec:
+      hostname: trafficstats
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
+      volumes:
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      containers:
+      - name: stats
+        image: gabbro:30500/cdn-stats:cps-0.1
+        imagePullPolicy: Never
         volumeMounts:
           - mountPath: /shared
             name: secret-dir
@@ -564,7 +342,6 @@ metadata:
 spec:
   selector:
     func: router
-  clusterIP: 10.99.0.60
   ports:
     - name: dns-tcp
       protocol: TCP
@@ -597,21 +374,24 @@ spec:
         func: router
     spec:
       hostname: trafficrouter
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: router
-        image: gabbro:30500/cdn-router
+        image: gabbro:30500/cdn-router:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.60'
+          value: $(TRAFFICROUTER_SERVICE_HOST)
         ports:
         - containerPort: 3333
         - containerPort: 3443
@@ -625,6 +405,76 @@ spec:
           - configMapRef:
               name: cdn-config
 ---
+#vault: create credentials
+apiVersion: v1
+kind: Service
+metadata:
+  name: trafficvault
+  namespace: infra
+spec:
+  selector:
+    func: secret
+## not sure what these ports for..
+  ports:
+    - name: port0
+      port: 8088
+    - name: port1
+      port: 8087
+    - name: port2
+      port: 8098
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-traffic-vault
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: secret
+  template:
+    metadata:
+      labels:
+        func: secret
+    spec:
+      hostname: trafficvault
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      - name: schema
+        persistentVolumeClaim:
+          claimName: cdn-schemas
+      containers:
+      - name: vault
+        image: gabbro:30500/cdn-vault:cps-0.1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8087
+        - containerPort: 8088
+        - containerPort: 8098
+        env:
+        - name: MY_SERVICE_IP
+          value: $(TRAFFICVAULT_SERVICE_HOST)
+        - name: CLUSTER_NAME
+          value: trafficvault
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+          - mountPath: /etc/riak/schemas
+            name: schema
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
 #Monitor
 apiVersion: v1
 kind: Service
@@ -634,7 +484,6 @@ metadata:
 spec:
   selector:
     func: monitor
-  clusterIP: 10.99.0.40
   ports:
     - port: 80
 ---
@@ -654,21 +503,24 @@ spec:
         func: monitor
     spec:
       hostname: trafficmonitor
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
           claimName: cdn-secret
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: router
-        image: gabbro:30500/cdn-monitor
+        image: gabbro:30500/cdn-monitor:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.40'
+          value: $(TRAFFICMONITOR_SERVICE_HOST)
         ports:
         - containerPort: 80
         volumeMounts:
@@ -678,54 +530,117 @@ spec:
           - configMapRef:
               name: cdn-config
 ---
-##Portal
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: trafficportal
-#  namespace: infra
-#spec:
-#  selector:
-#    func: portal
-#  clusterIP: 10.99.0.30
-#  ports:
-#    - port: 443
-#---
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: cdn-portal
-#  namespace: infra
-#spec:
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      func: portal
-#  template:
-#    metadata:
-#      labels:
-#        func: portal
-#    spec:
-#      hostname: trafficportal
-#      volumes:
-#      - name: secret-dir
-#        persistentVolumeClaim:
-#          claimName: cdn-secret
-#      dnsPolicy: ClusterFirst
-#      dnsConfig:
-#        nameservers:
-#          - 10.99.0.254
-#      containers:
-#      - name: router
-#        image: gabbro:30500/cdn-portal
-#        imagePullPolicy: Never
-#        volumeMounts:
-#          - mountPath: /shared
-#            name: secret-dir
-#        envFrom:
-#          - configMapRef:
-#              name: cdn-config
-#---
+## Edge and Mid cache tier
+apiVersion: v1
+kind: Service
+metadata:
+  name: edge
+  namespace: infra
+spec:
+  selector:
+    func: cache
+    role: edge
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-edge-tier
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: cache
+      role: edge
+  template:
+    metadata:
+      labels:
+        func: cache
+        role: edge
+    spec:
+      hostname: edge
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      containers:
+      - name: edge-tier
+        image: gabbro:30500/cdn-edge-tier:cps-0.1
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: $(EDGE_SERVICE_HOST)
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mid
+  namespace: infra
+spec:
+  selector:
+    func: cache
+    role: mid
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdn-mid-tier
+  namespace: infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      func: cache
+      role: mid
+  template:
+    metadata:
+      labels:
+        func: cache
+        role: mid
+    spec:
+      hostname: mid
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
+      volumes:
+      - name: secret-dir
+        persistentVolumeClaim:
+          claimName: cdn-secret
+      containers:
+      - name: mid-tier
+        image: gabbro:30500/cdn-mid-tier:cps-0.1
+        imagePullPolicy: Never
+        env:
+        - name: MY_SERVICE_IP
+          value: $(MID_SERVICE_HOST)
+        volumeMounts:
+          - mountPath: /shared
+            name: secret-dir
+        envFrom:
+          - configMapRef:
+              name: cdn-config
+---
 #Mock origin server
 apiVersion: v1
 kind: Service
@@ -735,7 +650,6 @@ metadata:
 spec:
   selector:
     func: data-server
-  clusterIP: 10.99.0.140
   ports:
     - port: 443
 ---
@@ -755,6 +669,13 @@ spec:
         func: data-server
     spec:
       hostname: origin
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - 10.96.100.254
+        searches:
+          - infra.ciab.test
+          - ciab.test
       volumes:
       - name: secret-dir
         persistentVolumeClaim:
@@ -762,17 +683,13 @@ spec:
       - name: content-dir
         persistentVolumeClaim:
           claimName: cdn-content
-      dnsPolicy: ClusterFirst
-      dnsConfig:
-        nameservers:
-          - 10.99.0.254
       containers:
       - name: data-server
-        image: gabbro:30500/cdn-server
+        image: gabbro:30500/cdn-service-server:cps-0.1
         imagePullPolicy: Never
         env:
         - name: MY_SERVICE_IP
-          value: '10.99.0.140'
+          value: $(ORIGIN_SERVICE_HOST)
         ports:
         - containerPort: 443
         volumeMounts:
@@ -791,14 +708,17 @@ metadata:
   namespace: infra
 spec:
   hostname: client
+  dnsPolicy: None
+  dnsConfig:
+    nameservers:
+      - 10.96.100.254
+    searches:
+      - infra.ciab.test
+      - ciab.test
   volumes:
   - name: secret-dir
     persistentVolumeClaim:
       claimName: cdn-secret
-  dnsPolicy: ClusterFirst
-  dnsConfig:
-    nameservers:
-      - 10.99.0.254
   containers:
   - name: client
     image: gabbro:30500/tc-client

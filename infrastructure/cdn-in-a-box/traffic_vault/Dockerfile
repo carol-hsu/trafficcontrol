@@ -16,7 +16,7 @@
 # under the License.
 FROM basho/riak-kv:ubuntu-2.2.3
 
-EXPOSE 8087 8098
+EXPOSE 8087 8098 8088
 
 RUN rm -rfv /etc/riak/prestart.d/* /etc/riak/poststart.d/*
 
@@ -34,6 +34,7 @@ ADD enroller/server_template.json \
     traffic_ops/to-access.sh \
     /
 
-ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
+ADD dns/insert-self-into-dns.sh /usr/local/sbin/
+#ADD dns/insert-self-into-dns.sh dns/set-dns.sh /usr/local/sbin/
 
 CMD /run.sh
