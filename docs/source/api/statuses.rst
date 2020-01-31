@@ -68,7 +68,7 @@ Response Structure
 ------------------
 :description: A short description of the status
 :id:          The integral, unique identifier of this status
-:lastUpdated: The date and time at which this status was last modified, in ISO format
+:lastUpdated: The date and time at which this status was last modified, in an ISO-like format
 :name:        The name of the status
 
 .. code-block:: http
@@ -80,7 +80,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: dHNip9kpTGGS1w39/fWcFehNktgmXZus8XaufnmDpv0PyG/3fK/KfoCO3ZOj9V74/CCffps7doEygWeL/xRtKA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Mon, 10 Dec 2018 20:56:59 GMT

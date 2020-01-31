@@ -59,9 +59,9 @@ describe('Traffic Portal Servers Test Suite', function() {
 		pageData.status.sendKeys(mockVals.status);
 		pageData.hostName.sendKeys(mockVals.hostName);
 		pageData.domainName.sendKeys(mockVals.domainName);
-		commonFunctions.selectDropdownbyNum(pageData.cdn, 1);
+		commonFunctions.selectDropdownbyNum(pageData.cdn, 2); // the ALL CDN is first so let's pick a real CDN
 		commonFunctions.selectDropdownbyNum(pageData.cachegroup, 1);
-		commonFunctions.selectDropdownbyNum(pageData.type, 1);
+		element(by.css("#type [label='EDGE']")).click();
 		commonFunctions.selectDropdownbyNum(pageData.profile, 1);
 		pageData.interfaceName.sendKeys(mockVals.interfaceName);
 		pageData.ipAddress.sendKeys(mockVals.ipAddress);
@@ -117,11 +117,18 @@ describe('Traffic Portal Servers Test Suite', function() {
 		});
 	});
 
-	it('should navigate back to the new server and delete it', function() {
-		console.log('Deleting the server ' + mockVals.hostName);
+	it('should navigate back to the new server and view the delivery services assigned to the server', function() {
+		console.log('Managing the delivery services of ' + mockVals.hostName);
 		browser.navigate().back();
-		pageData.deleteButton.click();
-		pageData.confirmWithNameInput.sendKeys(mockVals.hostName);
-		pageData.deletePermanentlyButton.click();
+		pageData.moreBtn.click();
+		pageData.viewDeliveryServicesMenuItem.click();
+		expect(browser.getCurrentUrl().then(commonFunctions.urlPath)).toMatch(commonFunctions.urlPath(browser.baseUrl)+"#!/servers/[0-9]+/delivery-services");
 	});
+
+	it('should ensure you cannot clone delivery service assignments because there are no delivery services assigned to the server', function() {
+		console.log('Ensure you cannot clone delivery service assignments for ' + mockVals.hostName);
+		pageData.moreBtn.click();
+		expect(element(by.css('.clone-ds-assignments')).isPresent()).toEqual(false);
+	});
+
 });

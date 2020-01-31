@@ -5,7 +5,7 @@
   "type": "UNK_PROFILE",
   "params": [
     {
-      "value": "https://trafficops.cdn.svc.cluster.local:443/",
+      "value": "https://trafficops.infra.ciab.test:443/",
       "name": "tm.url",
       "configFile": "global"
     },
@@ -20,14 +20,14 @@
       "value": "CDN-In-A-Box"
     },
     {
-      "value": "https://trafficops.cdn.svc.cluster.local/GeoLiteCity.dat.gz",
+      "value": "https://trafficops.infra.ciab.test/GeoLite2-City.mmdb.gz",
       "configFile": "CRConfig.json",
       "name": "geolocation.polling.url"
     },
     {
       "name": "geolocation6.polling.url",
       "configFile": "CRConfig.json",
-      "value": "https://trafficops.cdn.svc.cluster.local/GeoLiteCity.dat.gz"
+      "value": "https://trafficops.infra.ciab.test/GeoLite2-City.mmdb.gz"
     },
     {
       "value": "Traffic Ops",

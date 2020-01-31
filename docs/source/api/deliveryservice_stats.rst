@@ -82,7 +82,7 @@ Request Structure
 	+---------------------+-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 	| offset              | no                | A natural number of data points to drop from the beginning of the returned data set                                                                                                       |
 	+---------------------+-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-	| orderby             | no                | Though one struggles to imagine why, this can be used to specify "time" to sort data points by their "time" (which is the default behavior), or "value" to sort them by their "value"     |
+	| orderby             | no                | Though one struggles to imagine why, this can be used to specify "time" to sort data points by their "time" (which is the default behavior)                                               |
 	+---------------------+-------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 	| startDate           | yes               | The date and time from which statistics shall be aggregated in :rfc:`3339` format (with or without sub-second precision), the number of nanoseconds since the Unix                        |
 	|                     |                   | Epoch, or in the same, proprietary format as the ``lastUpdated`` fields prevalent throughout the Traffic Ops API                                                                          |
@@ -161,7 +161,7 @@ Response Structure
 	Access-Control-Allow-Origin: *
 	Content-Encoding: gzip
 	Content-Type: application/json
-	Set-Cookie: mojolicious=; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: zXJGjcYuu6HxWINVp8HA1gL31J3ukry5wCsTDNxtP/waC6rSD8h10KJ9jEAtRzJ9owOSVPvKaA/2bRu/QeuCpQ==
 	X-Server-Name: traffic_ops_golang/
 	Date: Mon, 22 Jul 2019 17:57:14 GMT

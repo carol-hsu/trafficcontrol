@@ -1,4 +1,4 @@
-## Kubernetes CDN deployment
+# Kubernetes CDN deployment
 
 You will deploy whole CDN services by the kubeconfig files under this directory.
 Please follow the proceduces as below.

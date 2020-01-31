@@ -24,6 +24,7 @@ import (
 	"net/http"
 
 	"github.com/apache/trafficcontrol/lib/go-atscfg"
+	"github.com/apache/trafficcontrol/lib/go-rfc"
 	"github.com/apache/trafficcontrol/lib/go-tc"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/api"
 	"github.com/apache/trafficcontrol/traffic_ops/traffic_ops_golang/ats"
@@ -65,7 +66,7 @@ func GetEdgeHeaderRewriteDotConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	txt := atscfg.MakeHeaderRewriteDotConfig(tc.CDNName(cdnName), toToolName, toURL, ds, assignedEdges)
-	w.Header().Set(tc.ContentType, tc.ContentTypeTextPlain)
+	w.Header().Set(rfc.ContentType, rfc.ContentTypeTextPlain)
 	w.Write([]byte(txt))
 }
 
@@ -105,7 +106,7 @@ func GetMidHeaderRewriteDotConfig(w http.ResponseWriter, r *http.Request) {
 
 	txt := atscfg.MakeHeaderRewriteMidDotConfig(tc.CDNName(cdnName), toToolName, toURL, ds, assignedMids)
 
-	w.Header().Set(tc.ContentType, tc.ContentTypeTextPlain)
+	w.Header().Set(rfc.ContentType, rfc.ContentTypeTextPlain)
 	w.Write([]byte(txt))
 }
 
@@ -136,11 +137,12 @@ SELECT
   s.host_name,
   s.domain_name,
   s.tcp_port,
-  s.status
+  st.name
 FROM
   server s
   JOIN deliveryservice_server dss ON dss.server = s.id
   JOIN deliveryservice ds ON ds.id = dss.deliveryservice
+  JOIN status st on st.id = s.status
 WHERE
   ds.xml_id = $1
 `
@@ -153,7 +155,7 @@ WHERE
 	servers := []atscfg.HeaderRewriteServer{}
 	for rows.Next() {
 		s := atscfg.HeaderRewriteServer{}
-		if err := rows.Scan(&s.Status, &s.HostName, &s.DomainName, &s.Port); err != nil {
+		if err := rows.Scan(&s.HostName, &s.DomainName, &s.Port, &s.Status); err != nil {
 			return nil, errors.New("scanning: " + err.Error())
 		}
 		s.Status = tc.CacheStatusFromString(string(s.Status))
@@ -169,9 +171,10 @@ SELECT
   s.host_name,
   s.domain_name,
   s.tcp_port,
-  s.status
+  st.name
 FROM
   server s
+  JOIN status st on st.id = s.status
 WHERE s.cachegroup IN (
   SELECT
     cg.parent_cachegroup_id
@@ -193,7 +196,7 @@ WHERE s.cachegroup IN (
 	servers := []atscfg.HeaderRewriteServer{}
 	for rows.Next() {
 		s := atscfg.HeaderRewriteServer{}
-		if err := rows.Scan(&s.Status, &s.HostName, &s.DomainName, &s.Port); err != nil {
+		if err := rows.Scan(&s.HostName, &s.DomainName, &s.Port, &s.Status); err != nil {
 			return nil, errors.New("scanning: " + err.Error())
 		}
 		s.Status = tc.CacheStatusFromString(string(s.Status))

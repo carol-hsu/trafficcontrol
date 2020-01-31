@@ -233,6 +233,8 @@ To upgrade from older Traffic Ops versions, stop the service, use :manpage:`yum(
 
 After this completes, see Guide_ for instructions on running the :program:`postinstall` script. Once the :program:`postinstall` script, has finished, run the following command as the root user (or with :manpage:`sudo(8)`): ``systemctl start traffic_ops`` to start the service.
 
+.. _to-running:
+
 Running
 =======
 Currently, Traffic Ops consists of two programs, as it is in the middle of a transition from one code-base to another. It is not recommended that either one be run on its own. Also, while this section contains instructions for running each piece manually, the only truly supported method is via :manpage:`systemd(8)`, e.g. :bash:`systemctl start traffic_ops` (this method also starts both programs properly and uses their default configuration file locations).
@@ -262,7 +264,7 @@ The script takes no options other than the ones accepted by `Hypnotoad <https://
 
 traffic_ops_golang
 ------------------
-``traffic_ops_golang [--version] [--plugins] --cfg CONFIG_PATH --dbcfg DB_CONFIG_PATH --riakcfg TRAFFIC_VAULT_CONFIG_PATH``
+``traffic_ops_golang [--version] [--plugins] [--api-routes] --cfg CONFIG_PATH --dbcfg DB_CONFIG_PATH --riakcfg TRAFFIC_VAULT_CONFIG_PATH``
 
 .. option:: --cfg CONFIG_PATH
 
@@ -277,6 +279,12 @@ traffic_ops_golang
 	List the installed plugins and exit.
 
 	.. note:: This only accounts for the plugins for the Go version, extensions to the `Legacy Perl Script`_ are not accounted for.
+
+.. option:: --api-routes
+
+	Print information about all API routes and exit. If also used with the :option:`--cfg` option, also print out the configured routing blacklist information from `cdn.conf`_.
+
+	.. note:: This only accounts for routes in the Go version, API routes in Perl but not in Go are not included.
 
 .. option:: --riakcfg TRAFFIC_VAULT_CONFIG_PATH
 
@@ -294,6 +302,8 @@ The main :program:`traffic_ops_golang` binary and the `Legacy Perl Script`_ use 
 
 Configuration Files
 -------------------
+
+.. _cdn.conf:
 
 cdn.conf
 """"""""
@@ -409,6 +419,13 @@ This file deals with the configuration parameters of running Traffic Ops itself.
 		.. warning:: OAuth support in Traffic Ops is still in its infancy, so most users are advised to avoid defining this field without good cause.
 
 	:write_timeout: An optional timeout in seconds set on handlers. After reading a request's header, the server will have this long to send back a response. If set to zero, there is no timeout. Default if not specified is zero.
+	:routing_blacklist: Optional configuration for explicitly routing requests to TO-Perl via ``perl_routes`` (only routes that are hardcoded to be able to bypass to TO-Perl -- not all Go routes can be bypassed to Perl) or explicitly disabling any routes via ``disabled_routes``.
+
+		.. versionadded:: 4.0
+
+		:perl_routes: A list of API route IDs to be handled by TO-Perl (rather than by the matching routes in ``traffic_ops_golang``). This list can only contain IDs for routes that are on the hardcoded (within ``traffic_ops_golang``) whitelist of routes that can be bypassed to TO-Perl. This configuration is meant to allow falling back to TO-Perl for routes that have been rewritten to TO-Go but have been found to contain regressions. In order to find which routes can be bypassed to TO-Perl, run ``./traffic_ops_golang`` using the :option:`--api-routes` option. This will print out information about all API routes in ``traffic_ops_golang``, including route IDs, paths, and whether or not routes can be bypassed to Perl. In general, the whitelist will contain only routes that have recently been rewritten to Go but not yet included in a release, and only if the Go route has not deviated from its corresponding Perl route in a way that would make it dangerous to fall back to. This whitelist should be expected to change as Go routes become "vetted" in a release. Once TO-Perl is removed, this field will be removed/ignored.
+		:disabled_routes: A list of API route IDs to disable. Requests matching these routes will receive a 503 response. To find the route ID for a given path you would like to disable, run ``./traffic_ops_golang`` using the :option:`--api-routes` option to view all the route information, including route IDs and paths.
+		:ignore_unknown_routes: If ``false`` (default) return an error and prevent startup if unknown route IDs are found. Otherwise, log a warning and continue startup.
 
 Example cdn.conf
 ''''''''''''''''
@@ -598,7 +615,7 @@ You will need to update `cdn.conf`_ with any necessary changes.
 	:caption: Sample 'listen' Line When Path to ``trafficops.crt`` and ``trafficops.key`` are Known
 
 	'hypnotoad' => ...
-	    'listen' => 'https://[::]:443?cert=/etc/pki/tls/certs/trafficops.crt&key=/etc/pki/tls/private/trafficops.key&ca=/etc/pki/tls/certs/localhost.ca&verify=0x00&ciphers=AES128-GCM-SHA256:HIGH:!RC4:!MD5:!aNULL:!EDH:!ED'
+		'listen' => 'https://[::]:443?cert=/etc/pki/tls/certs/trafficops.crt&key=/etc/pki/tls/private/trafficops.key&ca=/etc/pki/tls/certs/localhost.ca&verify=0x00&ciphers=AES128-GCM-SHA256:HIGH:!RC4:!MD5:!aNULL:!EDH:!ED'
 		 ...
 
 .. _admin-to-ext-script:

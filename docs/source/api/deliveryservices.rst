@@ -90,6 +90,10 @@ Response Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.5
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :exampleURLs:       An array of :ref:`ds-example-urls`
 :fqPacingRate:      The :ref:`ds-fqpr`
@@ -169,7 +173,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: mCLMjvACRKHNGP/OSx4javkOtxxzyiDdQzsV78IamUhVmvyKyKaCeOKRmpsG69w+nhh3OkPZ6e9MMeJpcJSKcA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Thu, 15 Nov 2018 19:04:29 GMT
@@ -253,7 +257,8 @@ Response Structure
 			"xxx",
 			"zyx"
 		],
-		"maxOriginConnections": 0
+		"maxOriginConnections": 0,
+		"ecsEnabled": false
 	}]}
 
 
@@ -295,6 +300,10 @@ Request Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.4
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :fqPacingRate:      The :ref:`ds-fqpr`
 
@@ -372,6 +381,7 @@ Request Structure
 		"deepCachingType": "NEVER",
 		"displayName": "test",
 		"dscp": 0,
+		"ecsEnabled": true,
 		"geoLimit": 0,
 		"geoProvider": 0,
 		"initialDispersion": 1,
@@ -427,6 +437,10 @@ Response Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.4
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :exampleURLs:       An array of :ref:`ds-example-urls`
 :fqPacingRate:      The :ref:`ds-fqpr`
@@ -506,7 +520,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: SVveQ5hGwfPv8N5APUskwLOzwrTUVA+z8wuFLsSLCr1/vVnFJJ0VQOGMUctg1NbqhAuQ795MJmuuAaAwR8dSOQ==
 	X-Server-Name: traffic_ops_golang/
 	Date: Mon, 19 Nov 2018 19:45:49 GMT
@@ -586,7 +600,8 @@ Response Structure
 			],
 			"deepCachingType": "NEVER",
 			"signingAlgorithm": null,
-			"tenant": "root"
+			"tenant": "root",
+			"ecsEnabled": true
 		}
 	]}
 

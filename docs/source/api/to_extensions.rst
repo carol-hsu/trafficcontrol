@@ -54,7 +54,7 @@ Response Structure
 
 	.. note:: This field has meaning only for "Check Extensions"
 
-:type:    The type of extension - there are a set number of allowed values which are not recorded anywhere at the time of this writing
+:type:    The :term:`Type` of extension - there are a set number of allowed values which are not recorded anywhere at the time of this writing
 :version: A (hopefully) semantic version number describing the version of the plugin
 
 .. code-block:: http
@@ -69,7 +69,7 @@ Response Structure
 	Content-Type: application/json
 	Date: Tue, 11 Dec 2018 20:51:48 GMT
 	Server: Mojolicious (Perl)
-	Set-Cookie: mojolicious=...; expires=Wed, 12 Dec 2018 00:51:48 GMT; path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Vary: Accept-Encoding
 	Whole-Content-Sha512: n73jg9XR4V5Cwqq56Rf3wuIi99k3mM5u2NAjcZ/gQBu8jvAFymDlnZqKeJ+wTll1vjIsHpXCOVXV7+5UGakLgA==
 	Transfer-Encoding: chunked
@@ -103,6 +103,9 @@ Response Structure
 
 ``POST``
 ========
+.. versionchanged:: 1.5
+	Only supports CHECK_EXTENSION extensions now. Previous implementation would attempt to accept CONFIG_EXTENSION or STATISTIC_EXTENSION extensions but would fail the creation.
+
 Creates a new Traffic Ops extension.
 
 :Auth. Required: Yes
@@ -121,6 +124,9 @@ Request Structure
 	1
 		enabled
 
+	.. versionchanged:: 1.5
+		Prior to version 1.5, ``isactive`` could be given as a string or an integer. Now it can only be given as an integer.
+
 :name:        The name of the extension
 :script_file: The base filename of the script that runs for the extension
 
@@ -130,13 +136,17 @@ Request Structure
 
 	.. note:: This field has meaning only for "Check Extensions"
 
-:type:    The type of extension - there are a set number of allowed values which are not recorded anywhere at the time of this writing
+:type:    The :term:`Type` of extension.
+
+	.. versionchanged:: 1.5
+		``type`` now only accepts a CHECK_EXTENSION type with the naming convention of ``CHECK_EXTENSION_*``.
+
 :version: A (hopefully) semantic version number describing the version of the plugin
 
 .. code-block:: http
 	:caption: Request Example
 
-	POST /api/1.4/to_extensions HTTP/1.1
+	POST /api/1.5/to_extensions HTTP/1.1
 	Host: ipcdn-cache-51.cdnlab.comcast.net:6443
 	User-Agent: curl/7.47.0
 	Accept: */*
@@ -149,7 +159,7 @@ Request Structure
 		"version": "0.0.1-1",
 		"info_url": "",
 		"script_file": "",
-		"isactive": "0",
+		"isactive": 0,
 		"description": "A test extension for API examples",
 		"servercheck_short_name": "test",
 		"type": "CHECK_EXTENSION_NUM"
@@ -170,7 +180,7 @@ Response Structure
 	Content-Type: application/json
 	Date: Wed, 12 Dec 2018 16:37:44 GMT
 	Server: Mojolicious (Perl)
-	Set-Cookie: mojolicious=...; expires=Wed, 12 Dec 2018 20:37:44 GMT; path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Vary: Accept-Encoding
 	Whole-Content-Sha512: 7M67PYnli6WzGQFS3g8Gh1SOyq6VENZMqm/kUffOTLLFfuWSEuSLA65R5R+VyJiNjdqOG5Bp78mk+JYcqhtVGw==
 	Content-Length: 89

@@ -70,30 +70,28 @@ Response Structure
 	Access-Control-Allow-Origin: *
 	Content-Disposition: attachment; filename="GLOBAL.json"
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: mzP7DVxFAGhICxqagwDyBDRea7oBZPMAx7NCDeOBVCRqlcCFFe7XL3JP58b80aaVOW/2ZGfg/jpYF70cdDfzQA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Fri, 13 Sep 2019 20:14:42 GMT
 	Transfer-Encoding: gzip
 
 
-	{
-	  "profile": {
-        "name": "GLOBAL",
-        "description": "Global Traffic Ops profile",
-        "cdn": "ALL",
-        "type": "UNK_PROFILE"
-      },
-	  "parameters": [
-        {
-            "config_file": "global",
-            "name": "tm.instance_name",
-            "value": "Traffic Ops CDN"
-        },
-        {
-            "config_file": "global",
-            "name": "tm.toolname",
-            "value": "Traffic Ops"
-        }
-	  ]
-	}
+	{ "profile": {
+		"name": "GLOBAL",
+		"description": "Global Traffic Ops profile",
+		"cdn": "ALL",
+		"type": "UNK_PROFILE"
+	},
+	"parameters": [
+		{
+			"config_file": "global",
+			"name": "tm.instance_name",
+			"value": "Traffic Ops CDN"
+		},
+		{
+			"config_file": "global",
+			"name": "tm.toolname",
+			"value": "Traffic Ops"
+		}
+	]}

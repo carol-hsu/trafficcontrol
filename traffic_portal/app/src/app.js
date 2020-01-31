@@ -35,7 +35,6 @@ var trafficPortal = angular.module('trafficPortal', [
         'ui.router',
         'ui.bootstrap',
         'ui.bootstrap.contextMenu',
-        'restangular',
         'app.templates',
         'angular-jwt',
         'chart.js',
@@ -140,9 +139,7 @@ var trafficPortal = angular.module('trafficPortal', [
         require('./modules/private/divisions/new').name,
         require('./modules/private/divisions/regions').name,
         require('./modules/private/endpoints').name,
-        require('./modules/private/endpoints/edit').name,
         require('./modules/private/endpoints/list').name,
-        require('./modules/private/endpoints/new').name,
         require('./modules/private/iso').name,
         require('./modules/private/jobs').name,
         require('./modules/private/jobs/list').name,
@@ -290,9 +287,6 @@ var trafficPortal = angular.module('trafficPortal', [
         require('./common/modules/form/division').name,
         require('./common/modules/form/division/edit').name,
         require('./common/modules/form/division/new').name,
-        require('./common/modules/form/endpoint').name,
-        require('./common/modules/form/endpoint/edit').name,
-        require('./common/modules/form/endpoint/new').name,
         require('./common/modules/form/federation').name,
         require('./common/modules/form/federation/edit').name,
         require('./common/modules/form/federation/new').name,
@@ -433,25 +427,11 @@ var trafficPortal = angular.module('trafficPortal', [
 
     ], App)
 
-        .config(function($stateProvider, $logProvider, RestangularProvider, momentPickerProvider, ENV) {
+        .config(function($stateProvider, $logProvider, momentPickerProvider, ENV) {
 
             momentPickerProvider.options({
                 minutesStep: 1,
                 maxView: 'hour'
-            });
-
-            RestangularProvider.setBaseUrl(ENV.api['root']);
-
-            RestangularProvider.setResponseInterceptor(function(data, operation, what) {
-
-                if (angular.isDefined(data.response)) { // todo: this should not be needed. need better solution.
-                    if (operation == 'getList') {
-                        return data.response;
-                    }
-                    return data.response[0];
-                } else {
-                    return data;
-                }
             });
 
             $logProvider.debugEnabled(true);
@@ -497,7 +477,7 @@ trafficPortal.factory('authInterceptor', function ($rootScope, $q, $window, $loc
                         messageModel.setMessages(alerts, true);
                         // forward the to the login page with ?redirect=page/they/were/trying/to/reach
                         $location.url('/login').search({ redirect: encodeURIComponent(url) });
-                    }, 200);
+                    }, 100);
                 }
             } else if (rejection.status === 403 || rejection.status === 404) {
                 $timeout(function () {

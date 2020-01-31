@@ -62,6 +62,8 @@ WHERE name='tm.instance_name' AND
 const userQueryByEmail = `SELECT EXISTS(SELECT * FROM tm_user WHERE email=$1)`
 const setTokenQuery = `UPDATE tm_user SET token=$1 WHERE email=$2`
 
+const defaultCookieDuration = 6 * time.Hour
+
 var resetPasswordEmailTemplate = template.Must(template.New("Password Reset Email").Parse("From: {{.From.Address.Address}}\r" + `
 To: {{.To.Address.Address}}` + "\r" + `
 Content-Type: text/html` + "\r" + `
@@ -144,10 +146,8 @@ func LoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 				}
 			}
 			if authenticated {
-				expiry := time.Now().Add(time.Hour * 6)
-				cookie := tocookie.New(form.Username, expiry, cfg.Secrets[0])
-				httpCookie := http.Cookie{Name: "mojolicious", Value: cookie, Path: "/", Expires: expiry, HttpOnly: true}
-				http.SetCookie(w, &httpCookie)
+				httpCookie := tocookie.GetCookie(form.Username, defaultCookieDuration, cfg.Secrets[0])
+				http.SetCookie(w, httpCookie)
 				resp = struct {
 					tc.Alerts
 				}{tc.CreateAlerts(tc.SuccessLevel, "Successfully logged in.")}
@@ -166,7 +166,7 @@ func LoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 			handleErrs(http.StatusInternalServerError, err)
 			return
 		}
-		w.Header().Set(tc.ContentType, tc.ApplicationJson)
+		w.Header().Set(rfc.ContentType, rfc.ApplicationJSON)
 		if !authenticated {
 			w.WriteHeader(http.StatusUnauthorized)
 		}
@@ -196,10 +196,8 @@ func TokenLoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		expiry := time.Now().Add(time.Hour * 6)
-		cookie := tocookie.New(username, expiry, cfg.Secrets[0])
-		httpCookie := http.Cookie{Name: "mojolicious", Value: cookie, Path: "/", Expires: expiry, HttpOnly: true}
-		http.SetCookie(w, &httpCookie)
+		httpCookie := tocookie.GetCookie(username, defaultCookieDuration, cfg.Secrets[0])
+		http.SetCookie(w, httpCookie)
 		respBts, err := json.Marshal(tc.CreateAlerts(tc.SuccessLevel, "Successfully logged in."))
 		if err != nil {
 			sysErr := fmt.Errorf("Marshaling response: %v", err)
@@ -208,7 +206,7 @@ func TokenLoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set(tc.ContentType, tc.ApplicationJson)
+		w.Header().Set(rfc.ContentType, rfc.ApplicationJSON)
 		w.Write(append(respBts, '\n'))
 
 		// TODO: afaik, Perl never clears these tokens. They should be reset to NULL on login, I think.
@@ -343,10 +341,8 @@ func OauthLoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 		}
 
 		if userAllowed && authenticated {
-			expiry := time.Now().Add(time.Hour * 6)
-			cookie := tocookie.New(userId, expiry, cfg.Secrets[0])
-			httpCookie := http.Cookie{Name: "mojolicious", Value: cookie, Path: "/", Expires: expiry, HttpOnly: true}
-			http.SetCookie(w, &httpCookie)
+			httpCookie := tocookie.GetCookie(userId, defaultCookieDuration, cfg.Secrets[0])
+			http.SetCookie(w, httpCookie)
 			resp = struct {
 				tc.Alerts
 			}{tc.CreateAlerts(tc.SuccessLevel, "Successfully logged in.")}
@@ -361,7 +357,7 @@ func OauthLoginHandler(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 			handleErrs(http.StatusInternalServerError, err)
 			return
 		}
-		w.Header().Set(tc.ContentType, tc.ApplicationJson)
+		w.Header().Set(rfc.ContentType, rfc.ApplicationJSON)
 		if !authenticated {
 			w.WriteHeader(http.StatusUnauthorized)
 		}
@@ -397,8 +393,8 @@ func VerifyUrlOnWhiteList(urlString string, whiteListedUrls []string) (bool, err
 	return false, nil
 }
 
-func setToken(addr rfc.EmailAddress, tx *sql.Tx) (string, error) {
-	t := make([]byte, 16)
+func generateToken() (string, error) {
+	var t = make([]byte, 16)
 	_, err := rand.Read(t)
 	if err != nil {
 		return "", err
@@ -406,12 +402,19 @@ func setToken(addr rfc.EmailAddress, tx *sql.Tx) (string, error) {
 	t[6] = (t[6] & 0x0f) | 0x40
 	t[8] = (t[8] & 0x3f) | 0x80
 
-	token := fmt.Sprintf("%x-%x-%x-%x-%x", t[0:4], t[4:6], t[6:8], t[8:10], t[10:])
+	return fmt.Sprintf("%x-%x-%x-%x-%x", t[0:4], t[4:6], t[6:8], t[8:10], t[10:]), nil
+}
+
+func setToken(addr rfc.EmailAddress, tx *sql.Tx) (string, error) {
+	token, err := generateToken()
+	if err != nil {
+		return "", err
+	}
 
 	if _, err = tx.Exec(setTokenQuery, token, addr.Address.Address); err != nil {
 		return "", err
 	}
-	return string(token), nil
+	return token, nil
 }
 
 func createMsg(addr rfc.EmailAddress, t string, db *sqlx.DB, c config.ConfigPortal) ([]byte, error) {
@@ -507,7 +510,7 @@ func ResetPassword(db *sqlx.DB, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set(tc.ContentType, tc.ApplicationJson)
+		w.Header().Set(rfc.ContentType, rfc.ApplicationJSON)
 		w.Write(append(respBts, '\n'))
 	}
 }

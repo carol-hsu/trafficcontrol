@@ -18,7 +18,8 @@
 ***************
 ``jobs/{{ID}}``
 ***************
-.. caution:: In the vast majority of cases, it is preferred to use the ``id`` query parameter of the :ref:`to-api-jobs` endpoint instead.
+.. deprecated:: ATCv4
+	Use the ``GET`` method of :ref:`to-api-jobs` with the ``id`` query parameter instead.
 
 ``GET``
 =======
@@ -70,7 +71,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: l7qvgOShdIFukHyOhi8es2BG6zJZ6RXTT7OKABtI8b1y+cE4nxFq11T5OG5yXjKo69eTYOD7xUUdLqneT2E/VA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 19 Jun 2019 13:29:21 GMT
@@ -84,7 +85,13 @@ Response Structure
 		"keyword": "PURGE",
 		"parameters": "TTL:3h",
 		"startTime": "2019-06-21 00:00:00+00"
-	}]}
+	}],
+	"alerts": [
+		{
+			"text": "This endpoint is deprecated, please use GET /jobs with the 'id' parameter instead",
+			"level": "warning"
+		}
+	]}
 
 
 .. [#tenancy] When viewing content invalidation jobs, only those jobs that operate on a :term:`Delivery Service` visible to the requesting user's :term:`Tenant` will be returned.

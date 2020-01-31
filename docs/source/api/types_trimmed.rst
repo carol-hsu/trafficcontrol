@@ -18,12 +18,12 @@
 *****************
 ``types/trimmed``
 *****************
-.. deprecated:: 1.1
-	A type is not a large object. Just get the names from :ref:`to-api-types` instead.
 
 ``GET``
 =======
-Retrieves only the names of all of the types of things configured in Traffic Ops. Yes, that is as specific as a description of a 'type' can be.
+Retrieves only the names of all of the :term:`Types` of things configured in Traffic Ops. Yes, that is as specific as a description of a 'type' can be.
+
+.. warning:: This endpoint is of limited use because it doesn't tell you what the type of each :term:`Type` is, which describes the types of objects that it can describe. No, I did not just have a stroke while writing this.
 
 :Auth. Required: Yes
 :Roles Required: None
@@ -44,7 +44,7 @@ Response Structure
 	Connection: keep-alive
 	Access-Control-Allow-Credentials: true
 	Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept
-	Set-Cookie: mojolicious=...; expires=Thu, 13 Dec 2018 03:37:01 GMT; path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-SHA512: Wh4z9VkNcOI8UzSTM77N+JFx5bP8yxRR4rg1fZIH40DI+0suOD36YhePUMMqMl6DIlIWjrnkj+iojuQ09oTzeg==
 	Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 	Date: Wed, 12 Dec 2018 23:37:01 GMT

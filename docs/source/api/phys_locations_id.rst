@@ -21,10 +21,7 @@
 
 ``GET``
 =======
-Retrieves information about a specific physical location
-
-.. deprecated:: 1.1
-	Use the ``id`` query parameter of the :ref:`to-api-phys_locations` endpoint instead
+Retrieves information about a specific :term:`Physical Location`
 
 :Auth. Required: Yes
 :Roles Required: None
@@ -94,7 +91,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: 0g4b3W1AwXytCnBo8TReQQij2v9oHAl7MG9KuwMig5V4sFcMM5qP8dgPsFTunFr00DPI20c7BpUbZsvJtsYTEQ==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 05 Dec 2018 22:45:47 GMT
@@ -121,7 +118,7 @@ Response Structure
 
 ``PUT``
 =======
-Updates a physical location
+Updates a :term:`Physical Location`
 
 :Auth. Required: Yes
 :Roles Required: "admin" or "operations"
@@ -131,11 +128,11 @@ Request Structure
 -----------------
 .. table:: Request Path Parameters
 
-	+------+--------------------------------------------------------------------------+
-	| Name |                Description                                               |
-	+======+==========================================================================+
-	|  ID  | The integral, unique identifier of the physical location being modified  |
-	+------+--------------------------------------------------------------------------+
+	+------+----------------------------------------------------------------------------------+
+	| Name | Description                                                                      |
+	+======+==================================================================================+
+	| ID   | The integral, unique identifier of the :term:`Physical Location` being modified  |
+	+------+----------------------------------------------------------------------------------+
 
 :address:   The physical location's street address
 :city:      The name of the city in which the physical location lies
@@ -203,7 +200,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: qnMe6OqxjSU8H1njlh00HWNR20YnVlOCufqCTdMBcdC1322jk2ICFQsQQ3XuOOR0WSb7h7OHCfXqDC1/jA1xjA==
 	X-Server-Name: traffic_ops_golang/
 	Date: Wed, 05 Dec 2018 23:39:17 GMT
@@ -234,7 +231,7 @@ Response Structure
 
 ``DELETE``
 ==========
-Deletes a physical location
+Deletes a :term:`Physical Location`
 
 :Auth. Required: Yes
 :Roles Required: "admin" or "operations"
@@ -244,11 +241,11 @@ Request Structure
 -----------------
 .. table:: Request Path Parameters
 
-	+------+--------------------------------------------------------------------------+
-	| Name |                Description                                               |
-	+======+==========================================================================+
-	|  ID  | The integral, unique identifier of the physical location being modified  |
-	+------+--------------------------------------------------------------------------+
+	+------+--------------------------------------------------------------------------------+
+	| Name | Description                                                                    |
+	+======+================================================================================+
+	| ID   | The integral, unique identifier of the :term:`Physical Location` being deleted |
+	+------+--------------------------------------------------------------------------------+
 
 .. code-block:: http
 	:caption: Request Example
@@ -270,7 +267,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: KeW/tEmICwpCGC8F0YMTqHdeR9J6W6Z3w/U+HOSbeCGyaEheCIhIsWlngT3dyfH1tiu8UyzaPB6QrJyXdybBkw==
 	X-Server-Name: traffic_ops_golang/
 	Date: Thu, 06 Dec 2018 00:28:48 GMT

@@ -82,7 +82,10 @@ var TableServerDeliveryServicesController = function(server, deliveryServices, $
 	$scope.cloneDsAssignments = function(server) {
 		var params = {
 			title: 'Clone Delivery Service Assignments',
-			message: "Please select an " + server.type + " cache to assign these " + deliveryServices.length + " delivery services to.<br><br>Warning - Any delivery services currently assigned to the target cache will be lost and replaced with these delivery service assignments...",
+			message: "Please select another " + server.type + " cache to assign these " + deliveryServices.length + " delivery services to." +
+				"<br>" +
+				"<br>" +
+				"<strong>WARNING THIS CANNOT BE UNDONE</strong> - Any delivery services currently assigned to the selected cache will be lost and replaced with these " + deliveryServices.length + " delivery service assignments.",
 			labelFunction: function(item) { return item['hostName'] + '.' + item['domainName'] }
 		};
 		var modalInstance = $uibModal.open({
@@ -94,7 +97,7 @@ var TableServerDeliveryServicesController = function(server, deliveryServices, $
 					return params;
 				},
 				collection: function(serverService) {
-					return serverService.getServers({ type: server.type, orderby: 'hostName' });
+					return serverService.getServers({ type: server.type, orderby: 'hostName', cdn: server.cdnId }).then(function(xs){return xs.filter(function(x){return x.id!=server.id})}, function(err){throw err});
 				}
 			}
 		});
@@ -152,9 +155,6 @@ var TableServerDeliveryServicesController = function(server, deliveryServices, $
 			"iDisplayLength": 25,
 			"aaSorting": [],
 			"columns": $scope.columns,
-			"colReorder": {
-				realtime: false
-			},
 			"initComplete": function(settings, json) {
 				try {
 					// need to create the show/hide column checkboxes and bind to the current visibility

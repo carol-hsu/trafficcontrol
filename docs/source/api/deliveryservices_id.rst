@@ -100,6 +100,10 @@ Response Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.4
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :exampleURLs:       An array of :ref:`ds-example-urls`
 :fqPacingRate:      The :ref:`ds-fqpr`
@@ -179,7 +183,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: SYwzDioAWWqHo6IDYpwUMVZBp9rHHqQLfqzysMYuPJPlDGIrjM2z3CO5/3621VOVUoBTFzGeA9V3wo4K2TjeDQ==
 	X-Server-Name: traffic_ops_golang/
 	Date: Mon, 10 Jun 2019 13:43:48 GMT
@@ -263,7 +267,8 @@ Response Structure
 			"xxx",
 			"zyx"
 		],
-		"maxOriginConnections": 0
+		"maxOriginConnections": 0,
+		"ecsEnabled": false
 	}]}
 
 
@@ -305,6 +310,10 @@ Request Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.4
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :fqPacingRate:      The :ref:`ds-fqpr`
 
@@ -386,6 +395,7 @@ Request Structure
 		"deepCachingType": "NEVER",
 		"displayName": "demo",
 		"dscp": 0,
+		"ecsEnabled": true,
 		"geoLimit": 0,
 		"geoProvider": 0,
 		"initialDispersion": 1,
@@ -420,7 +430,7 @@ Response Structure
 	Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Set-Cookie, Cookie
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: z4PhNX7vuL3xVChQ1m2AB9Yg5AULVxXcg/SpIdNs6c5H0NE8XYXysP+DGNKHfuwvY7kxvUdBeoGlODJ6+SfaPg==
 	X-Server-Name: traffic_ops_golang/
 	Date: Tue, 20 Nov 2018 14:12:25 GMT
@@ -467,7 +477,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: w9NlQpJJEl56r6iYq/fk8o5WfAXeUS5XR9yDHvKUgPO8lYEo8YyftaSF0MPFseeOk60dk6kQo+MLYTDIAhhRxw==
 	X-Server-Name: traffic_ops_golang/
 	Date: Tue, 20 Nov 2018 14:56:37 GMT

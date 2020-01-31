@@ -96,6 +96,10 @@ Response Structure
 :dnsBypassIp6:      A :ref:`ds-dns-bypass-ipv6`
 :dnsBypassTtl:      The :ref:`ds-dns-bypass-ttl`
 :dscp:              A :ref:`ds-dscp` to be used within the :term:`Delivery Service`
+:ecsEnabled:        A boolean that defines the :ref:`ds-ecs` setting on this :term:`Delivery Service`
+
+	.. versionadded:: 1.4
+
 :edgeHeaderRewrite: A set of :ref:`ds-edge-header-rw-rules`
 :exampleURLs:       An array of :ref:`ds-example-urls`
 :fqPacingRate:      The :ref:`ds-fqpr`
@@ -175,7 +179,7 @@ Response Structure
 	Access-Control-Allow-Methods: POST,GET,OPTIONS,PUT,DELETE
 	Access-Control-Allow-Origin: *
 	Content-Type: application/json
-	Set-Cookie: mojolicious=...; Path=/; HttpOnly
+	Set-Cookie: mojolicious=...; Path=/; Expires=Mon, 18 Nov 2019 17:40:54 GMT; Max-Age=3600; HttpOnly
 	Whole-Content-Sha512: CFmtW41aoDezCYxtAXnS54dfFOD6jdxDJ2/LMpbBqnndy5kac7JQhdFAWF109sl95XVSUV85JHFzXZTw/mJabQ==
 	X-Server-Name: traffic_ops_golang/
 	Date: Mon, 10 Jun 2019 17:01:30 GMT
@@ -259,7 +263,8 @@ Response Structure
 			"xxx",
 			"zyx"
 		],
-		"maxOriginConnections": 0
+		"maxOriginConnections": 0,
+		"ecsEnabled": false
 	}]}
 
 
