@@ -88,7 +88,7 @@ INFO: enroller.go:737: 2020-01-31T17:46:25.873428846Z: watching /shared/enroller
 INFO: enroller.go:881: 2020-01-31T17:46:25.876019841Z: Created enroller-started
 ```
 
-### For rebooting CDN 
+### Reboot CDN 
 
 * Remember to clean up the volume/physical files on disk creating by components, checking your pvc.yml for the locations
 
