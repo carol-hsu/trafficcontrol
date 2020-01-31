@@ -9,8 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/secrets"
-#    server: NFS_SERVER_ENDPOINT
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -23,7 +22,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/ops-ca"
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -36,7 +35,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/vault-schema"
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -49,7 +48,7 @@ spec:
     - ReadWriteMany
   nfs:
     path: "/mnt/k8s-cdn/origin-content"
-    server: "143.215.128.212"
+    server: NFS_SERVER_ENDPOINT
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
